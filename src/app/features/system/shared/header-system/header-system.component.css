@@ -1,0 +1,810 @@
+header {
+    width: 100%;
+    padding: 20px;
+    overflow-x: hidden;
+    background-color: transparent;
+    border-bottom: 1px solid black;
+}
+
+.container_header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+}
+
+.container_logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.container_logo img {
+    width: 20%;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.container_links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.container_usuario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.usuario_dados {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: right;
+}
+
+.container_usuario h5 {
+    font-size: 0.8rem;
+}
+
+.container_usuario p {
+    font-size: 0.7rem;
+}
+
+.usuario_foto {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: aquamarine;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.usuario_foto svg {
+    width: 50%;
+}
+
+.usuario_foto img {
+    width: 100%;
+}
+
+.botao {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #ffffff;
+    color: #37b7a6;
+    border: 1px solid #37b7a6;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.botao:hover {
+    background-color: #f1fafa;
+}
+
+.button:hover svg {
+    fill: black;
+}
+
+.button:active {
+    transform: scale(0.9);
+}
+
+.container_icone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Chat Styles */
+.chat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.chat-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 380px;
+    height: 550px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-header {
+    padding: 16px 20px;
+    background-color: #37b7a6;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.chat-header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-voltar {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.chat-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tabs */
+.chat-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: white;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tab-btn:hover {
+    color: #37b7a6;
+}
+
+.tab-btn.active {
+    color: #37b7a6;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #37b7a6;
+}
+
+/* User List */
+.usuarios-lista {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
+
+.usuario-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.usuario-item:hover {
+    background-color: #f3f4f6;
+}
+
+.usuario-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #37b7a6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.usuario-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.usuario-nome {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.usuario-role {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.badge-nao-lidas {
+    background-color: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
+
+.mensagem-vazia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.mensagem-vazia p {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.mensagem {
+    margin-bottom: 16px;
+    animation: messageSlide 0.2s ease-out;
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mensagem-conteudo {
+    background-color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mensagem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.mensagem-autor {
+    font-weight: 600;
+    font-size: 13px;
+    color: #37b7a6;
+}
+
+.mensagem-hora {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.mensagem-texto {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.chat-input {
+    padding: 16px;
+    background-color: white;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.chat-read-only {
+    padding: 16px;
+    background-color: #f3f4f6;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 12px 12px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.input-mensagem {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 40px;
+    max-height: 120px;
+    line-height: 1.5;
+}
+
+.input-mensagem:focus {
+    border-color: #37b7a6;
+    box-shadow: 0 0 0 3px rgba(55, 183, 166, 0.1);
+}
+
+.btn-enviar {
+    padding: 10px 16px;
+    background-color: #37b7a6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-enviar:hover {
+    background-color: #2d9a8a;
+}
+
+.btn-enviar:active {
+    transform: scale(0.95);
+}
+
+/* Patient Selection */
+.paciente-selecao {
+    padding: 16px;
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.paciente-selecao label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.paciente-dropdown {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.paciente-dropdown:focus {
+    outline: none;
+    border-color: #37b7a6;
+    box-shadow: 0 0 0 3px rgba(55, 183, 166, 0.1);
+}
+.usuario-cargo {
+    font-size: 0.65rem;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.container_usuario.clickable {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.container_usuario.clickable:hover {
+    opacity: 0.8;
+}
+
+
+
+/* Modal Perfil Styles */
+.modal-perfil {
+    background-color: white;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+}
+
+.modal-perfil-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-perfil-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.btn-close:hover {
+    color: #1f2937;
+    background-color: #f3f4f6;
+}
+
+.modal-perfil-body {
+    padding: 20px;
+}
+
+.perfil-foto-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.foto-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f8fafc;
+    border: 3px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.foto-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-preview:hover {
+    border-color: #14b8a6;
+}
+
+.upload-controls {
+    text-align: center;
+}
+
+.btn-upload {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f0fdfa;
+    color: #14b8a6;
+    border: 1px solid #14b8a6;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-upload:hover {
+    background-color: #14b8a6;
+    color: white;
+}
+
+.upload-hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.perfil-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.perfil-form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.perfil-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.perfil-input:focus {
+    outline: none;
+    border-color: #37b7a6;
+    box-shadow: 0 0 0 3px rgba(55, 183, 166, 0.1);
+}
+
+.modal-perfil-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background-color: #f9fafb;
+    border-radius: 0 0 12px 12px;
+}
+
+.btn-cancelar {
+    padding: 10px 16px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-salvar {
+    padding: 10px 16px;
+    background-color: #37b7a6;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-salvar:hover {
+    background-color: #0d9488;
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+
+
+/* Modal Sucesso */
+.modal-sucesso {
+    background-color: white;
+    border-radius: 12px;
+    width: 320px;
+    max-width: 90%;
+    padding: 32px 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    z-index: 1002;
+}
+
+.icone-sucesso {
+    margin-bottom: 16px;
+}
+
+.modal-sucesso h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.modal-sucesso p {
+    margin: 0 0 24px 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.btn-ok {
+    padding: 10px 32px;
+    background-color: #34d399;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-ok:hover {
+    background-color: #059669;
+}
+
+/* Mobile & Hamburger Styles */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1010;
+}
+
+.hamburger-btn span {
+    width: 100%;
+    height: 3px;
+    background-color: #37b7a6;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: flex;
+    }
+    .container_logo img {
+        width: 100px;
+    }
+    .container_links {
+        gap: 8px;
+    }
+    .container_usuario {
+        display: flex;
+    }
+    /* Hide name and details on mobile to save space */
+    .usuario_dados {
+        display: none;
+    }
+    .usuario_foto {
+        width: 35px;
+        height: 35px;
+    }
+    .botao {
+        padding: 8px;
+        font-size: 0; /* Hide text, keep icon */
+        width: auto;
+        min-width: 40px;
+    }
+    .botao_mensagem {
+        display: block;
+    }
+    .chat-container {
+        width: 95%;
+        right: 2.5%;
+        bottom: 10px;
+        height: 80vh;
+    }
+}

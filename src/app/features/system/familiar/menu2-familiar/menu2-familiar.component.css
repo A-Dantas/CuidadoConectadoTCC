@@ -1,0 +1,351 @@
+.container_principal {
+    padding: 30px;
+    background-color: #f8fafc;
+    min-height: calc(100vh - 80px);
+}
+
+.container_content_geral {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header_secao {
+    margin-bottom: 24px;
+}
+
+.titulo_pagina {
+    font-size: 24px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.subtitle_secao {
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.section_card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.agenda_header_info {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info_hoje {
+    display: flex;
+    flex-direction: column;
+}
+
+.info_hoje .label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.info_hoje .data {
+    font-size: 18px;
+    color: #0d9488;
+    font-weight: 700;
+}
+
+.lista_agenda {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.plantao_item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.plantao_item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.dia_container {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dia_numero {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.dia_mes {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.plantao_detalhes {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info_cuidador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar_mini {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info_cuidador .txt {
+    display: flex;
+    flex-direction: column;
+}
+
+.info_cuidador strong {
+    font-size: 16px;
+    color: #1e293b;
+}
+
+.horario {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.status_container_right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.tag_verde_suave {
+    background-color: #d1fae5;
+    color: #047857;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #a7f3d0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tag_laranja_suave {
+    background-color: #ffedd5;
+    color: #c2410c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #fed7aa;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tag_amarelo_suave {
+    background-color: #fef9c3;
+    color: #a16207;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #fde047;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tag_cinza_suave {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status_tag_group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn_relatorio {
+    background: white;
+    border: 1px solid #e2e8f0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 18px;
+}
+
+.btn_relatorio:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.status_tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f0fdfa;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status_tag .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.empty-state-light {
+    padding: 40px;
+    text-align: center;
+}
+
+.empty-state-light .icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+}
+
+@media (max-width: 600px) {
+    .plantao_detalhes {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .status_tag {
+        align-self: flex-start;
+    }
+}
+
+/* Modal UI para Relatório Indisponível */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    padding: 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #64748b;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.btn-redirect:hover {
+    background-color: #115e59 !important;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

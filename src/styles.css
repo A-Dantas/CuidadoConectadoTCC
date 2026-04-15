@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --cor_padrao: #25ba9a;
+    --cor_branco: #ffffff;
+    --cor_preto: #000000;
+    --font_size_padrao: 1rem;
+    --cor_gradient_1: #0c938e;
+    --cor_gradient_2: #0b9298;
+    --cor_gradient_3: #1e9bace5;
+    --cor_gradient_4: #209fbf98;
+    --cor_gradient_5: #1ca8e8;
+    --cor_gradient_6: #71bdf08a;
+    --cor_gradient_7: rgba(27, 119, 210, 0);
+    --cor_fundo_home: #ffff;
+
+    .fundo_gradiente_geral {
+    background: linear-gradient(
+      to bottom,
+      var(--cor_gradient_2),
+      var(--cor_gradient_4), transparent);
+}
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+html {
+    width: 100vw;
+    height: 100vh;
+}

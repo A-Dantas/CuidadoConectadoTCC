@@ -1,0 +1,50 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+main {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+}
+
+.container_principal {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 240px auto;
+    width: 100%;
+}
+
+.header_menu_lateral {
+    height: 100%;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* Painel Principal de Conteúdo */
+.container_principal > div:last-child {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+    .container_principal {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .header_menu_lateral {
+        display: contents;
+    }
+
+    .container_principal > div:last-child {
+        width: 100%;
+    }
+}

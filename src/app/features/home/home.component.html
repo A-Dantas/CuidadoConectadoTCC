@@ -1,0 +1,189 @@
+<app-header></app-header>
+<main>
+    <section class="home" id="inicio">
+        <div class="section_content_home">
+            <div class="container_texto">
+                <h1>
+                    Cuidado Conectado
+                </h1>
+                <p>
+                    <span> Tecnologia que aproxima quem cuida</span>.
+                    Unimos familiares, médicos e cuidadores em uma rede de apoio digital, garantindo um cuidado
+                    excepcional e humanizado para quem você ama.
+                </p>
+            </div>
+            <div class="container_carrosel" (mouseenter)="pauseAutoSlide()" (mouseleave)="startAutoSlide()">
+
+                <button class="nav_btn left" (click)="moveLeft()">‹</button>
+
+                <img [src]="currentImage" id="carrosel" />
+
+                <button class="nav_btn right" (click)="moveRight()">›</button>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Benefícios -->
+    <section class="beneficios" id="beneficios">
+        <div class="titulo_beneficios">
+            <h2>
+                Cuidado inteligente para quem mais precisa
+            </h2>
+            <p>
+                Uma nova forma de cuidar: simples, conectada e eficiente.
+            </p>
+        </div>
+        <section class="container_cards">
+            <div class="card">
+                <div class="icon">
+                    <img id="heart" src="icons/beneficios/icon_heart.png" alt="Icone de coração">
+                </div>
+                <div class="card_texto">
+                    <h3>
+                        Monitoramento da Saúde em Tempo Real
+                    </h3>
+                    <p>
+                        Acompanhe os sinais vitais, medicamentos e métricas de saúde com alertas instantâneos para
+                        cuidadores e profissionais de saúde.
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="icon">
+                    <img id="user" src="icons/beneficios/icon_user.png" alt="Icone de usuario">
+                </div>
+                <div class="card_texto">
+                    <h3>
+                        Coordenação Unificada de Cuidados
+                    </h3>
+                    <p>
+                        Colaboração integrada entre familiares, cuidadores e médicos por meio da nossa plataforma
+                        integrada.
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="icon">
+                    <img id="protect" src="icons/beneficios/icon_protect.png" alt="Icone de proteção">
+                </div>
+                <div class="card_texto">
+                    <h3>
+                        Segurança e Conformidade
+                    </h3>
+                    <p>
+                        Proteção Legal (LGPD) e Confidencialidade. Mantenha os dados de saúde sensíveis com a máxima
+                        segurança e em total conformidade com a legislação brasileira.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <!-- Serviços -->
+    <section class="servicos" id="servicos">
+        <div class="container_content_servicos">
+            <div class="servicos_titulo">
+                <h2>
+                    Soluções de Cuidados Abrangentes
+                </h2>
+                <p>
+                    Tudo o que você precisa para gerenciar o cuidado de idoso em uma única plataforma.
+                </p>
+            </div>
+            <div class="container_cards_servicos">
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_1.jpg" class="container_servico_img" alt="Imagem Card 1">
+                    <div class="servicos_texto">
+                        <h3>
+                            Gestão de Nomeações
+                        </h3>
+                        <p>
+                            Agende e coordene consultas médicas com lembretes automáticos e sincronização de calendário.
+                        </p>
+                    </div>
+                </div>
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_2.jpg" class="container_servico_img" alt="Imagem Card 2">
+                    <div class="servicos_texto">
+                        <h3>
+                            Acompanhamento de Medicamentos
+                        </h3>
+                        <p>
+                            Monitore os cronogramas de medicação, dosagens e recargas com sistemas inteligentes de
+                            lembretes.
+                        </p>
+                    </div>
+                </div>
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_3.jpg" class="container_servico_img" alt="Imagem Card 3">
+                    <div class="servicos_texto">
+                        <h3>
+                            Registros de Saúde
+                        </h3>
+                        <p>
+                            Registros digitais centralizados de saúde acessíveis aos membros da equipe de atendimento
+                            autorizados a qualquer momento.
+                        </p>
+                    </div>
+                </div>
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_4.jpg" class="container_servico_img" alt="Imagem Card 4">
+                    <div class="servicos_texto">
+                        <h3>
+                            Comunicação Instantânea
+                        </h3>
+                        <p>
+                            Mensagens em tempo real e chamadas de vídeo conectando famílias aos prestadores de cuidados.
+                        </p>
+                    </div>
+                </div>
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_5.jpg" class="container_servico_img" alt="Imagem Card 5">
+                    <div class="servicos_texto">
+                        <h3>
+                            Análise de Progresso
+                        </h3>
+                        <p>
+                            Relatórios e insights abrangentes que acompanham tendências de saúde e resultados de
+                            cuidados.
+                        </p>
+                    </div>
+                </div>
+                <div class="servicos_card">
+                    <img src="img/servicos/servico_img_6.jpg" class="container_servico_img" alt="Imagem Card 6">
+                    <div class="servicos_texto">
+                        <h3>
+                            Alertas de Emergência
+                        </h3>
+                        <p>
+                            Notificações imediatas para situações críticas com protocolos automáticos de emergência.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section class="container_contato" id="contato">
+        <div class="contato_content">
+            <div class="contato_texto">
+                <h2>
+                    Pronto para transformar sua experiência de cuidado?
+                </h2>
+                <p>
+                    Junte-se a milhares de famílias e profissionais de cuidados que confiam na <strong>Cuidado
+                        Conectado</strong>
+                </p>
+            </div>
+            <div class="container_contato_botao">
+                <button class="botao_formulario" [routerLink]="['/forms']" fragment="inicio_forms">
+                    Entre em contato
+                </button>
+            </div>
+        </div>
+    </section>
+</main>
+<app-footer></app-footer>
