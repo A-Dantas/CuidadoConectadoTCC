@@ -1,0 +1,844 @@
+<div class="container_principal">
+    <div class="container_content_geral">
+        <!-- Visão Geral -->
+        <div class="container_visao_geral">
+            <div class="indicadores">
+                <div class="container_texto">
+                    <h5>Total de Pacientes</h5>
+                    <p>{{ quantidadePacientes }}</p>
+                </div>
+                <div class="container_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="indicadores">
+                <div class="container_texto">
+                    <h5>Total de Usuários</h5>
+                    <p>{{ quantidadeUsuarios }}</p>
+                </div>
+                <div class="container_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="indicadores">
+                <div class="container_texto">
+                    <h5>Programação do dia</h5>
+                    <p>1</p>
+                </div>
+                <div class="container_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="indicadores">
+                <div class="container_texto">
+                    <h5>Mensagens</h5>
+                    <p>1</p>
+                </div>
+                <div class="container_icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M2 8.99374C2 5.68349 4.67654 3 8.00066 3H15.9993C19.3134 3 22 5.69478 22 8.99374V21H8.00066C4.68659 21 2 18.3052 2 15.0063V8.99374ZM20 19V8.99374C20 6.79539 18.2049 5 15.9993 5H8.00066C5.78458 5 4 6.78458 4 8.99374V15.0063C4 17.2046 5.79512 19 8.00066 19H20ZM14 11H16V13H14V11ZM8 11H10V13H8V11Z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas e Atividades -->
+        <div class="container_atividades">
+            <div class="section_card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0;">Mensagens enviadas</h3>
+                    @if(mensagensGeraisHistorico.length > 0) {
+                        <button class="botao" style="font-size: 12px; padding: 6px 12px; background: #e2e8f0; color: #334155;" (click)="toggleHistoricoGeral()">
+                            {{ mostrarHistoricoGeral ? 'Ocultar Histórico' : 'Ver Histórico completo' }}
+                        </button>
+                    }
+                </div>
+
+                <div class="mensagem-vazia" *ngIf="mensagensGeraisRecentes.length === 0 && (!mostrarHistoricoGeral || mensagensGeraisHistorico.length === 0)">
+                    <p>Nenhuma mensagem enviada para o grupo geral.</p>
+                </div>
+
+                <!-- Mensagens Recentes (Até 24h) -->
+                @if (!mostrarHistoricoGeral) {
+                    <div class="ativar_item" *ngFor="let msg of mensagensGeraisRecentes">
+                        <div class="icon" style="background-color: #f0fdf4;">
+                            📢
+                        </div>
+                        <div class="details">
+                            <div class="container_txt_msg">
+                                <strong style="color: #0d9488">{{msg.autor === 'Você' ? 'Gestor (Você)' : msg.autor}}</strong> ➔ {{msg.data}} às {{msg.hora}}<br>
+                                <span style="color: #334155; margin-top: 5px; display: block; white-space: pre-wrap;">{{msg.texto}}</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Histórico de Mensagens (> 24h) -->
+                @if (mostrarHistoricoGeral) {
+                    <div style="margin-bottom: 10px; font-weight: 600; color: #64748b; font-size: 14px;">
+                        Histórico Antigo (+24h)
+                    </div>
+                    <div class="ativar_item" *ngFor="let msg of mensagensGeraisHistorico" style="opacity: 0.85;">
+                        <div class="icon" style="background-color: #f1f5f9;">
+                            🗄️
+                        </div>
+                        <div class="details">
+                            <div class="container_txt_msg">
+                                <strong style="color: #475569">{{msg.autor === 'Você' ? 'Gestor (Você)' : msg.autor}}</strong> ➔ {{msg.data}} às {{msg.hora}}<br>
+                                <span style="color: #475569; margin-top: 5px; display: block; white-space: pre-wrap;">{{msg.texto}}</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="section_card card_acoes_rapidas">
+                <h3>Ações Rápidas</h3>
+                <button class="botao" (click)="abrirModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path
+                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                    Adicionar Novo Paciente
+                </button>
+                <button class="botao" (click)="abrirModalUsuario()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path
+                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                    Cadastrar Novo Usuário
+                </button>
+                <button class="botao" (click)="abrirModalLinkCadastro()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16" style="margin-right: 8px;">
+                        <path fill-rule="evenodd" d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                        <path fill-rule="evenodd" d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                    </svg>
+                    Gerar link para cadastro
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cadastro de Paciente -->
+@if (modalAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Adicionar Novo Paciente</h2>
+            <button class="close-btn" (click)="fecharModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Nome do Paciente</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.nomePaciente"
+                        placeholder="Digite o nome completo" [(ngModel)]="novoPaciente.nomePaciente"
+                        (input)="validarNome($event, 'nomePaciente', novoPaciente)">
+                    @if (errosPaciente.nomePaciente) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-large">
+                    <label>CPF</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.cpf"
+                        placeholder="000.000.000-00" [(ngModel)]="novoPaciente.cpf"
+                        (input)="formatarCPF($event, novoPaciente)" (blur)="verificarCpfExistenteGestor()" maxlength="14">
+                    @if (errosPaciente.cpf) { <span class="error-msg">CPF inválido ou já cadastrado</span> }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.dataNascimento"
+                        placeholder="DD/MM/AAAA" [(ngModel)]="novoPaciente.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', novoPaciente, atualizarIdadePaciente.bind(this))"
+                        maxlength="10">
+                    @if (errosPaciente.dataNascimento) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Idade</label>
+                    <input type="number" class="form-input" [class.input-error]="errosPaciente.idade"
+                        placeholder="Idade" [(ngModel)]="novoPaciente.idade" readonly>
+                    @if (errosPaciente.idade) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Rua</label>
+                <input type="text" class="form-input" [class.input-error]="errosPaciente.rua"
+                    placeholder="Digite o nome da rua" [(ngModel)]="novoPaciente.rua">
+                @if (errosPaciente.rua) { <span class="error-msg">Este campo é obrigatório</span> }
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-small">
+                    <label>Número</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.numero" placeholder="Nº"
+                        [(ngModel)]="novoPaciente.numero">
+                    @if (errosPaciente.numero) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.bairro"
+                        placeholder="Digite o bairro" [(ngModel)]="novoPaciente.bairro">
+                    @if (errosPaciente.bairro) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.cidade"
+                        placeholder="Digite a cidade" [(ngModel)]="novoPaciente.cidade">
+                    @if (errosPaciente.cidade) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Estado</label>
+                    <input type="text" class="form-input" [class.input-error]="errosPaciente.estado" placeholder="UF"
+                        [(ngModel)]="novoPaciente.estado" (input)="validarNome($event, 'estado', novoPaciente)"
+                        maxlength="2">
+                    @if (errosPaciente.estado) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Comorbidades</label>
+                @for (comorbidade of comorbidadesList; track $index; let i = $index) {
+                <div class="comorbidade-row">
+                    <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                        [(ngModel)]="comorbidadesList[i]">
+                    @if (comorbidadesList.length > 1) {
+                    <button type="button" class="btn-remove-comorbidade" (click)="removerComorbidade(i)">×</button>
+                    }
+                </div>
+                }
+                <button type="button" class="btn-add-comorbidade" (click)="adicionarComorbidade()">
+                    <span class="plus-icon">+</span>
+                    Adicionar Comorbidade
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Cuidador Atribuído</label>
+                <select class="form-select" (change)="selecionarOpcaoCuidador($event)"
+                    [value]="novoPaciente.cuidadorAtribuido">
+                    <option value="" disabled selected>Selecione um cuidador</option>
+                    @for (cuidador of cuidadores; track cuidador) {
+                    <option [value]="cuidador">{{ cuidador }}</option>
+                    }
+                    <option value="CADASTRAR_NOVO">+ Cadastrar Novo Cuidador</option>
+                </select>
+            </div>
+
+            <!-- Cadastro Rápido de Cuidador -->
+            @if (mostrarCadastroCuidador) {
+            <div class="cadastro-rapido cadastro-cuidador">
+                <h3>Cadastrar Novo Cuidador</h3>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Nome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosCuidador.userName"
+                            placeholder="Nome" [(ngModel)]="novoCuidador.userName"
+                            (input)="validarNome($event, 'userName', novoCuidador)">
+                        @if (errosCuidador.userName) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Sobrenome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosCuidador.sobrenome"
+                            placeholder="Sobrenome" [(ngModel)]="novoCuidador.sobrenome">
+                        @if (errosCuidador.sobrenome) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input"
+                        [class.input-error]="errosCuidador.email || emailInvalidoCuidador"
+                        placeholder="email@exemplo.com" [(ngModel)]="novoCuidador.email" (blur)="validarEmailCuidador()"
+                        (ngModelChange)="validarEmailCuidador($event)">
+                    @if (errosCuidador.email) { <span class="error-msg">Este campo é obrigatório</span> }
+                    @if (emailInvalidoCuidador && !errosCuidador.email) { <span class="error-msg">Email inválido. O
+                        email
+                        deve conter &#64;</span> }
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Telefone</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosCuidador.telefone"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoCuidador.telefone"
+                            (input)="formatarTelefone($event, 'telefone', novoCuidador)">
+                        @if (errosCuidador.telefone) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Whatsapp</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosCuidador.whatsapp"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoCuidador.whatsapp"
+                            (input)="formatarTelefone($event, 'whatsapp', novoCuidador)">
+                        @if (errosCuidador.whatsapp) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" [class.input-error]="errosCuidador.dataNascimento"
+                        placeholder="DD/MM/AAAA" [(ngModel)]="novoCuidador.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', novoCuidador, atualizarIdadeCuidador.bind(this))"
+                        maxlength="10">
+                    @if (errosCuidador.dataNascimento) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+
+                <div class="form-group">
+                    <label>Tempo de Experiência</label>
+                    <input type="text" class="form-input" [class.input-error]="errosCuidador.tempoExperiencia"
+                        placeholder="Ex: 5 anos" [(ngModel)]="novoCuidador.tempoExperiencia">
+                    @if (errosCuidador.tempoExperiencia) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+
+                <div class="form-group">
+                    <label>Experiência com quais comorbidades?</label>
+                    @for (comorbidade of experienciaComorbidadesList; track $index; let i = $index) {
+                    <div class="comorbidade-row">
+                        <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                            [(ngModel)]="experienciaComorbidadesList[i]">
+                        @if (experienciaComorbidadesList.length > 1) {
+                        <button type="button" class="btn-remove-comorbidade"
+                            (click)="removerExperienciaComorbidade(i)">×</button>
+                        }
+                    </div>
+                    }
+                    <button type="button" class="btn-add-comorbidade" (click)="adicionarExperienciaComorbidade()">
+                        <span class="plus-icon">+</span>
+                        Adicionar Comorbidade
+                    </button>
+                </div>
+
+                <div class="cadastro-rapido-actions">
+                    <button class="btn-cancel-quick" (click)="cancelarCadastroCuidador()">Cancelar</button>
+                    <button class="btn-save-quick" (click)="salvarNovoCuidador()">Salvar Cuidador</button>
+                </div>
+            </div>
+            }
+
+            <div class="form-group">
+                <label>Médico Atribuído</label>
+                <select class="form-select" (change)="selecionarOpcaoMedico($event)"
+                    [value]="novoPaciente.medicoAtribuido">
+                    <option value="" disabled selected>Selecione um médico</option>
+                    @for (medico of medicos; track medico) {
+                    <option [value]="medico">{{ medico }}</option>
+                    }
+                    <option value="CADASTRAR_NOVO">+ Cadastrar Novo Médico</option>
+                </select>
+            </div>
+
+            <!-- Cadastro Rápido de Médico -->
+            @if (mostrarCadastroMedico) {
+            <div class="cadastro-rapido cadastro-medico">
+                <h3>Cadastrar Novo Médico</h3>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Nome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosMedico.userName"
+                            placeholder="Nome" [(ngModel)]="novoMedico.userName"
+                            (input)="validarNome($event, 'userName', novoMedico)">
+                        @if (errosMedico.userName) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Sobrenome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosMedico.sobrenome"
+                            placeholder="Sobrenome" [(ngModel)]="novoMedico.sobrenome">
+                        @if (errosMedico.sobrenome) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Telefone</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosMedico.telefone"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoMedico.telefone"
+                            (input)="formatarTelefone($event, 'telefone', novoMedico)">
+                        @if (errosMedico.telefone) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Whatsapp</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosMedico.whatsapp"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoMedico.whatsapp"
+                            (input)="formatarTelefone($event, 'whatsapp', novoMedico)">
+                        @if (errosMedico.whatsapp) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input"
+                        [class.input-error]="errosMedico.email || emailInvalidoMedico" placeholder="email@exemplo.com"
+                        [(ngModel)]="novoMedico.email" (blur)="validarEmailMedico()"
+                        (ngModelChange)="validarEmailMedico($event)">
+                    @if (errosMedico.email) { <span class="error-msg">Este campo é obrigatório</span> }
+                    @if (emailInvalidoMedico && !errosMedico.email) { <span class="error-msg">Email inválido. O email
+                        deve conter &#64;</span> }
+                </div>
+
+                <div class="cadastro-rapido-actions">
+                    <button class="btn-cancel-quick" (click)="cancelarCadastroMedico()">Cancelar</button>
+                    <button class="btn-save-quick" (click)="salvarNovoMedico()">Salvar Médico</button>
+                </div>
+            </div>
+            }
+
+            <div class="form-group">
+                <label>Contato Familiar</label>
+                <select class="form-select" [class.input-error]="errosPaciente.contatoFamiliar"
+                    (change)="selecionarOpcaoFamiliar($event)" [value]="novoPaciente.contatoFamiliar">
+                    <option value="" disabled selected>Selecione um familiar</option>
+                    @for (familiar of familiares; track familiar) {
+                    <option [value]="familiar">{{ familiar }}</option>
+                    }
+                    <option value="CADASTRAR_NOVO">+ Cadastrar Novo Familiar</option>
+                </select>
+                @if (errosPaciente.contatoFamiliar) { <span class="error-msg">Este campo é obrigatório</span> }
+            </div>
+
+            <!-- Cadastro Rápido de Familiar -->
+            @if (mostrarCadastroFamiliar) {
+            <div class="cadastro-rapido cadastro-familiar">
+                <h3>Cadastrar Novo Familiar</h3>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Nome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.userName"
+                            placeholder="Nome" [(ngModel)]="novoFamiliar.userName"
+                            (input)="validarNome($event, 'userName', novoFamiliar)">
+                        @if (errosFamiliar.userName) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Sobrenome</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.sobrenome"
+                            placeholder="Sobrenome" [(ngModel)]="novoFamiliar.sobrenome">
+                        @if (errosFamiliar.sobrenome) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Data de Nascimento</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.dataNascimento"
+                            placeholder="DD/MM/AAAA" [(ngModel)]="novoFamiliar.dataNascimento"
+                            (input)="formatarDataBR($event, 'dataNascimento', novoFamiliar, atualizarIdadeFamiliar.bind(this))"
+                            maxlength="10">
+                        @if (errosFamiliar.dataNascimento) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-small">
+                        <label>Idade</label>
+                        <input type="number" class="form-input" placeholder="Idade" [(ngModel)]="novoFamiliar.idade"
+                            readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Telefone</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosFamiliar.telefone"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoFamiliar.telefone"
+                            (input)="formatarTelefone($event, 'telefone', novoFamiliar)">
+                        @if (errosFamiliar.telefone) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Whatsapp</label>
+                        <input type="tel" class="form-input" [class.input-error]="errosFamiliar.whatsapp"
+                            placeholder="(00) 00000-0000" [(ngModel)]="novoFamiliar.whatsapp"
+                            (input)="formatarTelefone($event, 'whatsapp', novoFamiliar)">
+                        @if (errosFamiliar.whatsapp) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-group form-group-large">
+                    <label>CPF do Idoso (Paciente)</label>
+                    <input type="text" class="form-input" [class.input-error]="errosFamiliar.cpfPacienteResponsavel"
+                        placeholder="000.000.000-00" [(ngModel)]="novoFamiliar.cpfPacienteResponsavel"
+                        (input)="formatarCPF($event, novoFamiliar)" 
+                        (blur)="formatarCPF($event, novoFamiliar)" maxlength="14">
+                    @if (errosFamiliar.cpfPacienteResponsavel) { <span class="error-msg">CPF do idoso é obrigatório</span> }
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input"
+                        [class.input-error]="errosFamiliar.email || emailInvalidoFamiliar"
+                        placeholder="email@exemplo.com" [(ngModel)]="novoFamiliar.email" (blur)="validarEmailFamiliar()"
+                        (ngModelChange)="validarEmailFamiliar($event)">
+                    @if (errosFamiliar.email) { <span class="error-msg">Este campo é obrigatório</span> }
+                    @if (emailInvalidoFamiliar && !errosFamiliar.email) { <span class="error-msg">Email inválido. O
+                        email
+                        deve conter &#64;</span> }
+                </div>
+
+                <div class="form-group">
+                    <label>Rua</label>
+                    <input type="text" class="form-input" [class.input-error]="errosFamiliar.rua"
+                        placeholder="Digite o nome da rua" [(ngModel)]="novoFamiliar.rua">
+                    @if (errosFamiliar.rua) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-small">
+                        <label>Número</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.numero"
+                            placeholder="Nº" [(ngModel)]="novoFamiliar.numero">
+                        @if (errosFamiliar.numero) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Bairro</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.bairro"
+                            placeholder="Digite o bairro" [(ngModel)]="novoFamiliar.bairro">
+                        @if (errosFamiliar.bairro) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Cidade</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.cidade"
+                            placeholder="Digite a cidade" [(ngModel)]="novoFamiliar.cidade">
+                        @if (errosFamiliar.cidade) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                    <div class="form-group form-group-small">
+                        <label>Estado</label>
+                        <input type="text" class="form-input" [class.input-error]="errosFamiliar.estado"
+                            placeholder="UF" [(ngModel)]="novoFamiliar.estado"
+                            (input)="validarNome($event, 'estado', novoFamiliar)" maxlength="2">
+                        @if (errosFamiliar.estado) { <span class="error-msg">Este campo é obrigatório</span> }
+                    </div>
+                </div>
+
+                <div class="cadastro-rapido-actions">
+                    <button class="btn-cancel-quick" (click)="cancelarCadastroFamiliar()">Cancelar</button>
+                    <button class="btn-save-quick" (click)="salvarNovoFamiliar()">Salvar Familiar</button>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+            <button class="btn-add" (click)="adicionarPaciente()">Adicionar Paciente</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso - Paciente -->
+@if (modalSucessoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Paciente adicionado com sucesso!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucesso()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal CPF Existente (Gestor) -->
+@if (modalCpfExistenteGestor) {
+<div class="modal-overlay">
+    <div class="modal-container" style="text-align: center; padding: 25px;">
+        <div style="font-size: 40px; color: #ef4444; margin-bottom: 15px;">&#9888;</div>
+        <h2 style="margin-top: 0;">Paciente Já Cadastrado</h2>
+        <p>Este CPF já está associado a um paciente no sistema.</p>
+        <button class="btn-submit" (click)="fecharModalCpfGestor()" style="margin-top: 20px; background-color: #ef4444;">Fechar</button>
+    </div>
+</div>
+}
+
+<!-- Modal de Cadastro de Usuário -->
+@if (modalUsuarioAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Cadastrar Novo Usuário</h2>
+            <button class="close-btn" (click)="fecharModalUsuario()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Tipo de Usuário</label>
+                <select class="form-select" [(ngModel)]="novoUsuario.tipoUsuario">
+                    <option value="" disabled selected>Selecione o Tipo de Usuário</option>
+                    <option value="cuidador">Cuidador</option>
+                    <option value="medico">Médico</option>
+                    <option value="familiar">Familiar</option>
+                </select>
+            </div>
+
+            <!-- Só mostra o resto do formulário se um tipo de usuário foi selecionado -->
+            @if (novoUsuario.tipoUsuario) {
+                
+            <div class="perfil-foto-upload" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <div class="foto-preview" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; border: 2px dashed #cbd5e1;">
+                    @if (novoUsuario.fotoPerfil) {
+                        <img [src]="novoUsuario.fotoPerfil" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    } @else {
+                        <div class="placeholder-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="#94a3b8">
+                                <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 4C13.6569 4 15 5.34315 15 7C15 8.65685 13.6569 10 12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4ZM12 20C9.2517 20 6.82862 18.5986 5.38531 16.454C6.63412 14.974 8.54714 14 10.7 14H13.3C15.4529 14 17.3659 14.974 18.6147 16.454C17.1714 18.5986 14.7483 20 12 20Z"></path>
+                            </svg>
+                        </div>
+                    }
+                </div>
+                <div class="upload-controls" style="text-align: center;">
+                    <label for="fotoInputUsuario" class="btn-upload" style="background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-block;">Adicionar Foto (Opcional)</label>
+                    <input type="file" id="fotoInputUsuario" (change)="onFotoSelecionada($event, novoUsuario)" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Nome</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.userName" placeholder="Nome"
+                        [(ngModel)]="novoUsuario.userName" (input)="validarNome($event, 'userName', novoUsuario)">
+                    @if (errosUsuario.userName) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Sobrenome</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.sobrenome"
+                        placeholder="Sobrenome" [(ngModel)]="novoUsuario.sobrenome"
+                        (input)="validarNome($event, 'sobrenome', novoUsuario)">
+                    @if (errosUsuario.sobrenome) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+
+            @if (novoUsuario.tipoUsuario !== 'medico') {
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.dataNascimento"
+                        placeholder="DD/MM/AAAA" [(ngModel)]="novoUsuario.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', novoUsuario, atualizarIdadeUsuario.bind(this))"
+                        maxlength="10">
+                    @if (errosUsuario.dataNascimento) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Idade</label>
+                    <input type="number" class="form-input" placeholder="Idade" [(ngModel)]="novoUsuario.idade"
+                        readonly>
+                </div>
+            </div>
+            }
+
+            <div class="form-row">
+                @if (novoUsuario.tipoUsuario !== 'medico') {
+                <div class="form-group form-group-large">
+                    <label>Telefone</label>
+                    <input type="tel" class="form-input" [class.input-error]="errosUsuario.telefone"
+                        placeholder="(00) 00000-0000" [(ngModel)]="novoUsuario.telefone"
+                        (input)="formatarTelefone($event, 'telefone', novoUsuario)">
+                    @if (errosUsuario.telefone) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                }
+                <div class="form-group form-group-large">
+                    <label>Whatsapp</label>
+                    <input type="tel" class="form-input" [class.input-error]="errosUsuario.whatsapp"
+                        placeholder="(00) 00000-0000" [(ngModel)]="novoUsuario.whatsapp"
+                        (input)="formatarTelefone($event, 'whatsapp', novoUsuario)">
+                    @if (errosUsuario.whatsapp) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-large" *ngIf="novoUsuario.tipoUsuario === 'familiar'">
+                    <label>CPF do Idoso (Paciente)</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.cpfPacienteResponsavel"
+                        placeholder="000.000.000-00" [(ngModel)]="novoUsuario.cpfPacienteResponsavel"
+                        (input)="formatarCPF($event, novoUsuario)" 
+                        (blur)="formatarCPF($event, novoUsuario)" maxlength="14">
+                    @if (errosUsuario.cpfPacienteResponsavel) { <span class="error-msg">CPF do idoso é obrigatório</span> }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-input" [class.input-error]="errosUsuario.email || emailInvalidoUsuario"
+                    placeholder="email@exemplo.com" [(ngModel)]="novoUsuario.email" (blur)="validarEmailUsuario()"
+                    (ngModelChange)="validarEmailUsuario($event)">
+                @if (errosUsuario.email) { <span class="error-msg">Este campo é obrigatório</span> }
+                @if (emailInvalidoUsuario && !errosUsuario.email) { <span class="error-msg">Email inválido. Deve conter
+                    &#64;</span> }
+            </div>
+
+            @if (novoUsuario.tipoUsuario !== 'medico') {
+            <div class="form-group">
+                <label>Rua</label>
+                <input type="text" class="form-input" [class.input-error]="errosUsuario.rua"
+                    placeholder="Digite o nome da rua" [(ngModel)]="novoUsuario.rua">
+                @if (errosUsuario.rua) { <span class="error-msg">Este campo é obrigatório</span> }
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-small">
+                    <label>Número</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.numero" placeholder="Nº"
+                        [(ngModel)]="novoUsuario.numero">
+                    @if (errosUsuario.numero) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.bairro"
+                        placeholder="Digite o bairro" [(ngModel)]="novoUsuario.bairro">
+                    @if (errosUsuario.bairro) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.cidade"
+                        placeholder="Digite a cidade" [(ngModel)]="novoUsuario.cidade">
+                    @if (errosUsuario.cidade) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Estado</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.estado" placeholder="UF"
+                        [(ngModel)]="novoUsuario.estado" (input)="validarNome($event, 'estado', novoUsuario)"
+                        maxlength="2">
+                    @if (errosUsuario.estado) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
+            </div>
+            }
+
+            @if (novoUsuario.tipoUsuario === 'cuidador') {
+            <div class="form-group">
+                <label>Tempo de Experiência</label>
+                <input type="text" class="form-input" [class.input-error]="errosUsuario.tempoExperiencia"
+                    placeholder="Ex: 5 anos" [(ngModel)]="novoUsuario.tempoExperiencia">
+                @if (errosUsuario.tempoExperiencia) { <span class="error-msg">Este campo é obrigatório</span> }
+            </div>
+            }
+
+            @if (novoUsuario.tipoUsuario !== 'familiar' && novoUsuario.tipoUsuario !== 'medico') {
+            <div class="form-group">
+                <label>Chave Pix</label>
+                <input type="text" class="form-input" [class.input-error]="errosUsuario.chavePix"
+                    placeholder="CPF, Email, Telefone ou Chave Aleatória" [(ngModel)]="novoUsuario.chavePix">
+                @if (errosUsuario.chavePix) { <span class="error-msg">Este campo é obrigatório</span> }
+            </div>
+            }
+
+            @if (novoUsuario.tipoUsuario !== 'familiar' && novoUsuario.tipoUsuario !== 'medico') {
+            <div class="form-group">
+                <label>Experiência com quais comorbidades?</label>
+                @for (comorbidade of novoUsuario.experienciaComorbidadesList; track $index; let i = $index) {
+                <div class="comorbidade-row">
+                    <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                        [(ngModel)]="novoUsuario.experienciaComorbidadesList![i]">
+                    @if (novoUsuario.experienciaComorbidadesList!.length > 1) {
+                    <button type="button" class="btn-remove-comorbidade"
+                        (click)="removerExperienciaComorbidadeUsuario(i)">×</button>
+                    }
+                </div>
+                }
+                <button type="button" class="btn-add-comorbidade" (click)="adicionarExperienciaComorbidadeUsuario()">
+                    <span class="plus-icon">+</span>
+                    Adicionar Comorbidade
+                </button>
+            </div>
+            }
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModalUsuario()">Cancelar</button>
+            <button class="btn-add" (click)="adicionarUsuario()">Cadastrar Usuário</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso - Usuário -->
+@if (modalSucessoUsuarioAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Usuário cadastrado com sucesso!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoUsuario()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Gerar Link de Cadastro -->
+@if (modalLinkCadastroAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Gerar Link para Cadastro</h2>
+            <button class="close-btn" (click)="fecharModalLinkCadastro()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Tipo de Usuário</label>
+                <select class="form-select" [(ngModel)]="tipoUsuarioLink">
+                    <option value="" disabled selected>Selecione o Tipo de Usuário</option>
+                    <option value="cuidador">Cuidador</option>
+                    <option value="familiar">Familiar responsável</option>
+                    <option value="medico">Médico</option>
+                </select>
+            </div>
+            
+            @if (tipoUsuarioLink) {
+                <div class="link-gerado-container" style="margin-top: 20px; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; text-align: center; background-color: #f9f9f9;">
+                    <p style="margin-bottom: 10px; font-weight: bold;">Link de Cadastro:</p>
+                    <a [href]="getLinkCadastro()" target="_blank" style="word-break: break-all; color: #007bff; text-decoration: none;">
+                        {{ getLinkCadastro() }}
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModalLinkCadastro()">Fechar</button>
+            <button class="btn-add" (click)="copiarLinkCadastro()" [disabled]="!tipoUsuarioLink" [class.btn-disabled]="!tipoUsuarioLink">Copiar Link</button>
+        </div>
+    </div>
+</div>
+}

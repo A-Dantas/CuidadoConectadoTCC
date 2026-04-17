@@ -1,0 +1,32 @@
+<div class="fundo_gradiente" *ngIf="!isHome">
+</div>
+<header [class.menu-white]="menuBranco">
+    <div class="container_header">
+        <div class="container_logo">
+            <img [routerLink]="['/home']" fragment="inicio"
+                [src]="menuBranco ? 'img/logo/logo_verde.png' : 'img/logo/logo_branco_2.png'" alt="Logo">
+        </div>
+
+        <!-- Hamburger Button -->
+        <button class="hamburger" [class.active]="mobileMenuOpen" (click)="toggleMobileMenu()"
+            [attr.aria-label]="mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="container_nav" [class.mobile-open]="mobileMenuOpen">
+            <nav class="nav">
+                <a [routerLink]="['/home']" fragment="inicio" (click)="closeMobileMenu()">Início</a>
+                <a [routerLink]="['/home']" fragment="beneficios" (click)="closeMobileMenu()">Benefícios</a>
+                <a [routerLink]="['/home']" fragment="servicos" (click)="closeMobileMenu()">Serviços</a>
+                <a [routerLink]="['/home']" fragment="contato" (click)="closeMobileMenu()">Contato</a>
+                <a [routerLink]="['/about']" fragment="historia" (click)="closeMobileMenu()">Sobre</a>
+            </nav>
+            <div class="container_button">
+                <button [routerLink]="['/login']" fragment="login_inicio" class="button_login"
+                    (click)="closeMobileMenu()">Login</button>
+            </div>
+        </div>
+    </div>
+</header>

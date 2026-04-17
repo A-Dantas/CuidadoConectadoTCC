@@ -131,11 +131,25 @@
             }
 
             @if (tipoUsuario !== 'familiar' && tipoUsuario !== 'medico') {
-            <div class="form-group">
-                <label>Chave Pix</label>
-                <input type="text" class="form-input" [class.input-error]="errosUsuario.chavePix"
-                    placeholder="CPF, Email, Telefone ou Chave Aleatória" [(ngModel)]="novoUsuario.chavePix">
-                @if (errosUsuario.chavePix) { <span class="error-msg">Este campo é obrigatório</span> }
+            <div class="form-row" *ngIf="tipoUsuario === 'cuidador'">
+                <div class="form-group form-group-small" style="flex: 0 0 150px;">
+                    <label>Tipo de PIX</label>
+                    <select class="form-input" [(ngModel)]="novoUsuario.tipoChavePix">
+                        <option value="CPF">CPF</option>
+                        <option value="Email">E-mail</option>
+                        <option value="Telefone">Telefone</option>
+                        <option value="Chave Aleatória">Chave Aleatória</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Chave Pix</label>
+                    <input type="text" class="form-input" [class.input-error]="errosUsuario.chavePix"
+                        [placeholder]="novoUsuario.tipoChavePix === 'CPF' ? '000.000.000-00' : 
+                                      novoUsuario.tipoChavePix === 'Email' ? 'email@exemplo.com' :
+                                      novoUsuario.tipoChavePix === 'Telefone' ? '(00) 00000-0000' : 'Cole aqui sua chave aleatória'" 
+                        [(ngModel)]="novoUsuario.chavePix">
+                    @if (errosUsuario.chavePix) { <span class="error-msg">Este campo é obrigatório</span> }
+                </div>
             </div>
 
             <!-- Upload de Currículo PDF -->

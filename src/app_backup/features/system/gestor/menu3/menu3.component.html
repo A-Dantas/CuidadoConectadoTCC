@@ -1,0 +1,416 @@
+<div class="user-management-container">
+    <header class="header">
+        <h1 class="page-title">Gestão de Usuários</h1>
+        <div class="filter-section">
+            <label class="filter-label">Filtro:</label>
+            <select class="filter-select" [(ngModel)]="filtroRole">
+                <option value="Todos">Todos</option>
+                <option value="Caregiver">Cuidador</option>
+                <option value="Doctor">Médico</option>
+                <option value="Family Member">Familiar</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="users-grid">
+        @if (usuariosFiltrados.length === 0) {
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                <path
+                    d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z">
+                </path>
+            </svg>
+            <h3>Nenhum usuário encontrado</h3>
+            <p>Não há usuários cadastrados no sistema ou nenhum usuário corresponde ao filtro selecionado.</p>
+        </div>
+        }
+
+        @for (usuario of usuariosFiltrados; track usuario.userName) {
+        <div class="user-card" 
+            [class.cursor-pointer]="usuario.role === 'Caregiver'"
+            [class.role-caregiver]="usuario.role === 'Caregiver'"
+            [class.role-doctor]="usuario.role === 'Doctor'"
+            [class.role-family]="usuario.role === 'Family Member'"
+            (click)="abrirModalCartao(usuario)">
+            <div class="card-header-actions">
+                <div class="card-actions">
+                    <button class="action-icon edit-icon"
+                        (click)="$event.stopPropagation(); abrirModalEdicao(usuario, $index)" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+                            fill="currentColor">
+                            <path
+                                d="M16.757 3L6 13.757 6 18 10.243 18 21 7.243 21 3 16.757 3zM18.5 5.5L18.5 6.757 17.243 8.015 16.985 7.757 16.985 5.5 18.5 5.5zM4 20L4 22 20 22 20 20 4 20z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button class="action-icon delete-icon"
+                        (click)="$event.stopPropagation(); abrirModalConfirmacaoExclusao($index)" title="Excluir">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+                            fill="currentColor">
+                            <path
+                                d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="user-icon-container" style="overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
+                @if (usuario.fotoPerfil) {
+                    <img [src]="usuario.fotoPerfil" alt="Foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" style="margin: auto;">
+                        <path
+                            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                    </svg>
+                }
+            </div>
+            <div class="user-details">
+                <h3 class="user-name">{{ usuario.userName }} {{ usuario.sobrenome }}</h3>
+                <p class="user-role">{{ traduzirRole(usuario.role) }}</p>
+                <p class="user-email">{{ usuario.email }}</p>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+@if (modalEdicaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Editar Usuário</h2>
+            <button class="close-btn" (click)="fecharModalEdicao()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Função</label>
+                <select class="form-select" [(ngModel)]="usuarioEditando.role">
+                    <option value="Caregiver">Cuidador</option>
+                    <option value="Doctor">Médico</option>
+                    <option value="Family Member">Familiar</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Nome</label>
+                    <input type="text" class="form-input" placeholder="Nome" [(ngModel)]="usuarioEditando.userName"
+                        (input)="validarNome($event, 'userName', usuarioEditando)">
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Sobrenome</label>
+                    <input type="text" class="form-input" placeholder="Sobrenome"
+                        [(ngModel)]="usuarioEditando.sobrenome"
+                        (input)="validarNome($event, 'sobrenome', usuarioEditando)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" placeholder="DD/MM/AAAA"
+                        [(ngModel)]="usuarioEditando.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', usuarioEditando, atualizarIdadeUsuario.bind(this))"
+                        maxlength="10">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Idade</label>
+                    <input type="number" class="form-input" placeholder="Idade"
+                        [(ngModel)]="usuarioEditando.idade" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Telefone</label>
+                    <input type="tel" class="form-input" placeholder="(00) 00000-0000"
+                        [(ngModel)]="usuarioEditando.telefone"
+                        (input)="formatarTelefone($event, 'telefone', usuarioEditando)">
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Whatsapp</label>
+                    <input type="tel" class="form-input" placeholder="(00) 00000-0000"
+                        [(ngModel)]="usuarioEditando.whatsapp"
+                        (input)="formatarTelefone($event, 'whatsapp', usuarioEditando)">
+                </div>
+                <!-- Vínculo com Idoso para Familiares -->
+                <div class="form-group form-group-large" *ngIf="usuarioEditando.role === 'Family Member'">
+                    <label>CPF do Idoso (Paciente)</label>
+                    <input type="text" class="form-input" placeholder="000.000.000-00"
+                        [(ngModel)]="usuarioEditando.cpfPacienteResponsavel"
+                        (input)="formatarCPF($event, usuarioEditando)" maxlength="14">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-input" placeholder="Email" [(ngModel)]="usuarioEditando.email">
+            </div>
+
+            <!-- Dados de acesso (Login e Senha) -->
+            <div class="access-info-section" style="margin-top: 20px; padding: 15px; background-color: #f1f5f9; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 14px; color: #475569; display: flex; align-items: center; gap: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 8H20C20.5523 8 21 8.44772 21 9V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V9C3 8.44772 3.44772 8 4 8H6V7C6 3.68629 8.68629 1 12 1C15.3137 1 18 3.68629 18 7V8ZM16 8V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V8H16ZM11 14V16H13V14H11ZM7 14V16H9V14H7ZM15 14V16H17V14H15Z"></path></svg>
+                    Dados de Acesso
+                </h3>
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Login</label>
+                        <input type="text" class="form-input" placeholder="Login de acesso" [(ngModel)]="usuarioEditando.login">
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Senha</label>
+                        <input type="text" class="form-input" placeholder="Senha de acesso" [(ngModel)]="usuarioEditando.password">
+                    </div>
+                </div>
+                <div class="reenviar-senha-container" style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                    <button type="button" class="btn-resend" (click)="reenviarSenha()" style="background: none; border: 1px solid #14b8a6; color: #14b8a6; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M1.94607 9.31543C1.42365 9.14125 1.41953 8.86022 1.95694 8.68108L21.0431 2.31901C21.5716 2.14285 21.8747 2.43866 21.7266 2.95694L16.2734 22.0431C16.1224 22.5716 15.8178 22.59 15.5945 22.0876L12 14L18 6.00005L10 12L1.94607 9.31543Z"></path></svg>
+                        Reenviar Dados de Acesso
+                    </button>
+                </div>
+            </div>
+
+            <!-- Endereço (Não exibe para Médico) -->
+            @if (usuarioEditando.role !== 'Doctor') {
+            <div class="form-group">
+                <label>Rua</label>
+                <input type="text" class="form-input" placeholder="Digite o nome da rua"
+                    [(ngModel)]="usuarioEditando.rua">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-small">
+                    <label>Número</label>
+                    <input type="text" class="form-input" placeholder="Nº" [(ngModel)]="usuarioEditando.numero">
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input" placeholder="Digite o bairro"
+                        [(ngModel)]="usuarioEditando.bairro">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input" placeholder="Digite a cidade"
+                        [(ngModel)]="usuarioEditando.cidade">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Estado</label>
+                    <input type="text" class="form-input" placeholder="UF" [(ngModel)]="usuarioEditando.estado"
+                        (input)="validarNome($event, 'estado', usuarioEditando)" maxlength="2">
+                </div>
+            </div>
+            }
+
+            <!-- Campos específicos de Cuidador -->
+            @if (usuarioEditando.role === 'Caregiver') {
+            <div class="form-group">
+                <label>Tempo de Experiência</label>
+                <input type="text" class="form-input" placeholder="Ex: 5 anos"
+                    [(ngModel)]="usuarioEditando.tempoExperiencia">
+            </div>
+
+            <div class="form-group">
+                <label>Chave Pix</label>
+                <input type="text" class="form-input" placeholder="CPF, Email, Telefone ou Chave Aleatória"
+                    [(ngModel)]="usuarioEditando.chavePix">
+            </div>
+
+            <div class="form-group">
+                <label>Experiência com quais comorbidades?</label>
+                @if (usuarioEditando.experienciaComorbidadesList) {
+                @for (comorbidade of usuarioEditando.experienciaComorbidadesList; track $index; let i = $index) {
+                <div class="comorbidade-row">
+                    <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                        [(ngModel)]="usuarioEditando.experienciaComorbidadesList[i]">
+                    @if (usuarioEditando.experienciaComorbidadesList.length > 1) {
+                    <button type="button" class="btn-remove-comorbidade"
+                        (click)="removerExperienciaComorbidadeUsuario(i)">×</button>
+                    }
+                </div>
+                }
+                }
+                <button type="button" class="btn-add-comorbidade" (click)="adicionarExperienciaComorbidadeUsuario()">
+                    <span class="plus-icon">+</span>
+                    Adicionar Comorbidade
+                </button>
+            </div>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModalEdicao()">Cancelar</button>
+            <button class="btn-save" (click)="salvarEdicao()">Salvar Alterações</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Confirmação de Exclusão -->
+@if (modalConfirmacaoExclusaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-confirmacao" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Confirmar Exclusão</h2>
+            <button class="close-btn" (click)="fecharModalConfirmacaoExclusao()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModalConfirmacaoExclusao()">Cancelar</button>
+            <button class="btn-delete" (click)="confirmarExclusao()">Excluir</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso - Edição -->
+@if (modalSucessoEdicaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Usuário atualizado com sucesso!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoEdicao()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso - Exclusão -->
+@if (modalSucessoExclusaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Usuário excluído com sucesso!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoExclusao()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso - Reenvio de Senha -->
+@if (modalSucessoReenvioAberto) {
+<div class="modal-overlay" style="z-index: 1100;">
+    <div class="modal-container modal-sucesso" style="max-width: 350px;">
+        <div class="modal-body" style="padding: 30px 20px;">
+            <div class="sucesso-icon" style="color: #14b8a6; margin-bottom: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M1.94607 9.31543C1.42365 9.14125 1.41953 8.86022 1.95694 8.68108L21.0431 2.31901C21.5716 2.14285 21.8747 2.43866 21.7266 2.95694L16.2734 22.0431C16.1224 22.5716 15.8178 22.59 15.5945 22.0876L12 14L18 6.00005L10 12L1.94607 9.31543Z"></path>
+                </svg>
+            </div>
+            <h3 style="margin-bottom: 10px; color: #111827;">Dados Enviados!</h3>
+            <p class="sucesso-mensagem" style="font-size: 14px; color: #64748b;">As credenciais de acesso foram reenviadas para o e-mail do usuário.</p>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal Cartão do Cuidador -->
+@if (modalCartaoCuidadorAberto && cuidadorSelecionado) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-cartao-cuidador" id="cartaoExportar" (click)="$event.stopPropagation()">
+        <div class="cartao-header-strip"></div>
+        <div class="cartao-content">
+            <div class="cartao-top-row">
+                <div class="cartao-logo">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span>Cuidado</span>
+                        <span>Conectado</span>
+                    </div>
+                </div>
+
+                <div class="cartao-main-info">
+                    <h2 class="cartao-nome">{{ cuidadorSelecionado.userName.toUpperCase() }} {{
+                        cuidadorSelecionado.sobrenome?.toUpperCase() }}</h2>
+                    <span class="cartao-cargo">CUIDADOR(A)</span>
+                </div>
+            </div>
+
+            <div class="cartao-body-grid">
+                <div class="cartao-info-list">
+                    <div class="info-item">
+                        <span class="info-label">TELEFONE :</span>
+                        <span class="info-value">{{ cuidadorSelecionado.telefone }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">EXPERIÊNCIA :</span>
+                        <span class="info-value">{{ cuidadorSelecionado.tempoExperiencia }}</span>
+                    </div>
+                    <div class="info-item comorbidades-item">
+                        <span class="info-label">COMORBIDADES :<br>ATENDIDAS</span>
+                        <div class="info-value comorbidades-list">
+                            @if (cuidadorSelecionado.experienciaComorbidadesList &&
+                            cuidadorSelecionado.experienciaComorbidadesList.length > 0) {
+                            @for (comorbidade of cuidadorSelecionado.experienciaComorbidadesList; track $index) {
+                            <span>{{ comorbidade }}</span>
+                            }
+                            } @else {
+                            <span>Nenhuma informada</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cartao-image-area">
+                    <div class="image-placeholder" style="overflow: hidden; padding: 0;">
+                        @if (cuidadorSelecionado.fotoPerfil) {
+                            <img [src]="cuidadorSelecionado.fotoPerfil" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                        } @else {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e0f2fe" style="width: 100%; height: 100%; padding: 20px;">
+                                <path
+                                    d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h12v16H6V4zm2 10l2.5 3.01L14.5 12l4.5 6H5l3-4z" />
+                            </svg>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cartao-footer-curve">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+                <path fill="#004d40" fill-opacity="1"
+                    d="M0,224L80,213.3C160,203,320,181,480,181.3C640,181,800,203,960,213.3C1120,224,1280,224,1360,224L1440,224L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+                </path>
+                <path fill="#0d9488" fill-opacity="0.8"
+                    d="M0,256L80,245.3C160,235,320,213,480,213.3C640,213,800,235,960,245.3C1120,256,1280,256,1360,256L1440,256L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"
+                    style="transform: translateY(20px);"></path>
+            </svg>
+        </div>
+        <button class="close-cartao-btn" data-html2canvas-ignore="true" (click)="fecharModalCartao()">&times;</button>
+        <button class="download-cartao-btn" data-html2canvas-ignore="true" (click)="baixarCartao()" style="position: absolute; bottom: 30px; left: 40px; z-index: 20; background: white; color: #0d9488; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Baixar Cartão
+        </button>
+    </div>
+</div>
+}

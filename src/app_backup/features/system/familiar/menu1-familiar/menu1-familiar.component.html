@@ -1,0 +1,200 @@
+<div class="container_principal">
+    <div class="container_content_geral">
+        <header class="header_secao">
+            <h1 class="titulo_pagina">Perfil do Idoso</h1>
+            <button class="btn_editar_top" (click)="abrirModalEdicao()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M15.7279 9.57627L14.4237 8.27212L5 17.6958V19H6.30418L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.2521 5.4437L15.8379 6.85791L17.1421 8.16206ZM7.12893 21H3V16.8711L16.435 3.43597C16.8255 3.04545 17.4587 3.04545 17.8492 3.43597L20.564 6.15079C20.9545 6.54131 20.9545 7.17448 20.564 7.565L7.12893 21Z"></path>
+                </svg>
+                Editar Informações
+            </button>
+        </header>
+
+        @if (paciente) {
+        <div class="container_perfil">
+            <div class="section_card">
+                <div class="card_header_perfil">
+                    <div class="avatar_grande">
+                        @if (paciente.foto) {
+                            <img [src]="paciente.foto" alt="Foto do Idoso">
+                        } @else {
+                            👵
+                        }
+                    </div>
+                    <div class="header_info">
+                        <h2>{{paciente.nomePaciente}}</h2>
+                        <span class="badge_status">Vinculado</span>
+                    </div>
+                </div>
+
+                <div class="grid_informacoes">
+                    <div class="info_item">
+                        <label>CPF</label>
+                        <p>{{paciente.cpf || 'Não informado'}}</p>
+                    </div>
+                    <div class="info_item">
+                        <label>Idade</label>
+                        <p>{{paciente.idade}} anos</p>
+                    </div>
+                    <div class="info_item">
+                        <label>Data de Nascimento</label>
+                        <p>{{formatarData(paciente.dataNascimento)}}</p>
+                    </div>
+                    <div class="info_item">
+                        <label>Endereço</label>
+                        <p>{{paciente.endereco || 'Não informado'}}</p>
+                    </div>
+                </div>
+
+                <div class="container_divisor"></div>
+
+                <div class="secao_detalhes">
+                    <h3>Dados Clínicos</h3>
+                    <div class="info_item">
+                        <label>Comorbidades</label>
+                        <div class="tags_comorbidades">
+                            @if (paciente.comorbidades) {
+                                @for (tag of paciente.comorbidades.split(','); track tag) {
+                                    <span class="tag_comorbidade">{{tag.trim()}}</span>
+                                }
+                            } @else {
+                                <p>Nenhuma comorbidade registrada.</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="info_item" style="margin-top: 20px;">
+                        <label>Observações</label>
+                        <p class="observacao_texto">{{paciente.observacoes || 'Nenhuma observação registrada.'}}</p>
+                    </div>
+                </div>
+
+                <div class="container_divisor"></div>
+
+                <div class="secao_responsaveis">
+                    <h3>Equipe de Cuidados</h3>
+                    <div class="grid_responsaveis">
+                        <div class="responsavel_card">
+                            <div class="icon_resp">👨‍⚕️</div>
+                            <div class="resp_details">
+                                <label>Médico Atribuído</label>
+                                <p>{{paciente.medicoAtribuido || 'Não atribuído'}}</p>
+                            </div>
+                        </div>
+                        <div class="responsavel_card">
+                            <div class="icon_resp">👩‍👧</div>
+                            <div class="resp_details">
+                                <label>Cuidador Atual</label>
+                                <p>{{paciente.cuidadorAtribuido || 'Não atribuído'}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        } @else if (!loading) {
+        <div class="empty-state">
+            <div class="icon">⚠️</div>
+            <h3>Nenhum idoso vinculado</h3>
+            <p>Não encontramos nenhum idoso vinculado ao seu CPF em nossa base de dados.</p>
+        </div>
+        } @else {
+            <div class="loading-state">Carregando dados...</div>
+        }
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+@if (modalAberto) {
+<div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Editar Informações do Idoso</h2>
+            <button class="close-btn" (click)="fecharModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Foto do Idoso Upload -->
+            <div class="perfil-foto-upload">
+                <div class="foto-preview">
+                    @if (pacienteEditando.foto) {
+                        <img [src]="pacienteEditando.foto" alt="Preview">
+                    } @else if (paciente?.foto) {
+                         <img [src]="paciente?.foto" alt="Preview">
+                    } @else {
+                        <div class="placeholder-icon">👵</div>
+                    }
+                </div>
+                <div class="upload-controls">
+                    <label for="fotoPacienteInput" class="btn-upload">Alterar Foto</label>
+                    <input type="file" id="fotoPacienteInput" (change)="onFotoSelecionada($event)" accept="image/*" style="display: none;">
+                    <p class="upload-hint">Máx: 1MB</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Endereço</h3>
+                <div class="form-group">
+                    <label>Rua</label>
+                    <input type="text" class="form-input" [(ngModel)]="pacienteEditando.rua">
+                </div>
+                <div class="form-row">
+                    <div class="form-group form-group-small">
+                        <label>Nº</label>
+                        <input type="text" class="form-input" [(ngModel)]="pacienteEditando.numero">
+                    </div>
+                    <div class="form-group form-group-large">
+                        <label>Bairro</label>
+                        <input type="text" class="form-input" [(ngModel)]="pacienteEditando.bairro">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group form-group-large">
+                        <label>Cidade</label>
+                        <input type="text" class="form-input" [(ngModel)]="pacienteEditando.cidade">
+                    </div>
+                    <div class="form-group form-group-small">
+                        <label>UF</label>
+                        <input type="text" class="form-input" [(ngModel)]="pacienteEditando.estado" maxlength="2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Dados Clínicos</h3>
+                <div class="form-group">
+                    <label>Comorbidades (separadas por vírgula)</label>
+                    <input type="text" class="form-input" [(ngModel)]="pacienteEditando.comorbidades">
+                </div>
+                <div class="form-group">
+                    <label>Observações</label>
+                    <textarea class="form-input" rows="4" [(ngModel)]="pacienteEditando.observacoes" placeholder="Outras informações relevantes sobre a saúde ou rotina..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+            <button class="btn-add" (click)="salvarPerfil()">Salvar Alterações</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Sucesso -->
+@if (modalSucessoAberto) {
+<div class="modal-overlay">
+    <div class="modal-container modal-sucesso">
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Informações atualizadas com sucesso!</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucesso()">OK</button>
+        </div>
+    </div>
+</div>
+}

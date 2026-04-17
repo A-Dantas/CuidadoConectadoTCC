@@ -1,0 +1,650 @@
+main {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.home {
+    padding-top: 6rem;
+    background: linear-gradient(to bottom,
+            var(--cor_gradient_1),
+            var(--cor_gradient_2),
+            var(--cor_gradient_4), transparent);
+}
+
+.section_content_home {
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    padding: 2rem 1rem 4rem 1rem;
+    gap: 2rem;
+}
+
+.container_texto {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    color: var(--cor_branco);
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.container_texto h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    text-shadow: 1px 1px 1px black;
+    margin-bottom: 1rem;
+}
+
+.container_texto p {
+    font-size: 1rem;
+    text-align: justify;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+}
+
+span {
+    font-weight: 600;
+}
+
+.container_img {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.container_img img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+
+/* carrosel */
+.container_carrosel {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+}
+
+#carrosel {
+    width: 90%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    margin: auto;
+}
+
+.nav_btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 10%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav_btn.left {
+    left: 5%;
+}
+
+.nav_btn.right {
+    right: 5%;
+}
+
+/* Benefícios */
+.beneficios {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    color: black;
+    gap: 2.5rem;
+    padding: 4rem 1rem 4rem 1rem;
+}
+
+.titulo_beneficios {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.titulo_beneficios h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.titulo_beneficios p {
+    font-size: 1.1rem;
+    max-width: 48rem;
+    width: 100%;
+}
+
+.container_cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(246, 241, 241, 0.083);
+    color: black;
+    padding: 20px 25px;
+    box-shadow: 0px 2px 8px rgba(146, 130, 147, 0.815);
+    border-radius: 1rem;
+    gap: 20px;
+    min-height: auto;
+}
+
+.card:hover {
+    outline: 2px solid rgb(44, 196, 107);
+    box-shadow: none;
+}
+
+.icon {
+    width: 62px;
+    height: 64px;
+}
+
+#heart {
+    width: 100%;
+    margin: auto;
+    background-image: linear-gradient(to bottom, #FF6B8B, #FF3B5F);
+    border-radius: 0.6rem;
+}
+
+#user {
+    width: 100%;
+    margin: auto;
+    background: linear-gradient(305deg, #0763ecc8, #0033CC);
+    border-radius: 0.6rem;
+}
+
+#protect {
+    width: 100%;
+    margin: auto;
+    background-image: linear-gradient(305deg, #2ca07f, #2ECC71);
+    border-radius: 0.6rem;
+}
+
+.card_texto {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.card_texto h3 {
+    font-size: 1.3rem;
+}
+
+.card_texto p {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    line-height: 1.5;
+}
+
+/* Serviços */
+.servicos {
+    max-width: 100%;
+    background-image:
+        linear-gradient(to top, rgba(112, 181, 176, 0), rgba(112, 181, 176, 0.0) 0%, rgba(155, 223, 219, 0.607) 50%, rgba(255, 254, 254, 0.117) 100%),
+        url('/mnt/data/55246.png');
+    background-size: cover;
+    background-position: center;
+    padding: 4rem 1rem;
+}
+
+.container_content_servicos {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 2rem;
+    gap: 2.5rem;
+}
+
+.servicos_titulo {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.servicos_titulo h2 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--cor_gradient_3);
+}
+
+.servicos_titulo p {
+    font-size: 1.1rem;
+    width: 90%;
+    text-align: center;
+    color: rgb(76, 145, 148);
+}
+
+.container_cards_servicos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    justify-content: center;
+    margin: auto;
+    padding: 0 1rem;
+}
+
+.servicos_card {
+    width: 100%;
+    border-radius: 0.8rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    background: #fff;
+    max-height: none;
+}
+
+.container_servico_img {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: fill;
+}
+
+.servicos_texto {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    line-height: 1.5rem;
+    padding: 5%;
+    min-height: 150px;
+}
+
+.servicos_texto h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    min-height: auto;
+    width: 100%;
+}
+
+.servicos_texto p {
+    font-size: 1rem;
+    color: rgb(75 85 99);
+    font-weight: 400;
+}
+
+/* Contato */
+.container_contato {
+    width: 100%;
+    padding: 4rem 1rem;
+}
+
+.contato_content {
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.contato_texto {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.contato_texto h2 {
+    font-size: 1.6rem;
+    line-height: 1.3;
+}
+
+.contato_texto p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.contato_texto span {
+    font-weight: 600;
+}
+
+.botao_formulario {
+    margin: 15px;
+    padding: 15px 30px;
+    border: 2px solid var(--cor_gradient_4);
+    border-radius: 5px;
+}
+
+button {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: var(--cor_preto);
+    background: transparent;
+    cursor: pointer;
+    transition: ease-out 0.5s;
+    box-shadow: inset 0 0 0 0 var(--cor_gradient_4);
+}
+
+button:hover {
+    color: white;
+    box-shadow: inset 0 -100px 0 0 var(--cor_gradient_3);
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+.beneficios {
+    scroll-margin-top: 6rem;
+}
+
+.servicos,
+.container_contato {
+    scroll-margin-top: 6rem;
+}
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+    .home {
+        padding-top: 8rem;
+    }
+
+    .section_content_home {
+        padding: 3rem 2rem 6rem 2rem;
+        gap: 2.5rem;
+    }
+
+    .container_texto h1 {
+        font-size: 3.5rem;
+        line-height: 1.2;
+        margin-bottom: 2rem;
+    }
+
+    .container_texto p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
+    #carrosel {
+        width: 70%;
+    }
+
+    .nav_btn.left {
+        left: 10%;
+    }
+
+    .nav_btn.right {
+        right: 10%;
+    }
+
+    .beneficios {
+        padding: 6rem 2rem;
+        gap: 3rem;
+    }
+
+    .titulo_beneficios h2 {
+        font-size: 2.2rem;
+    }
+
+    .titulo_beneficios p {
+        font-size: 1.3rem;
+    }
+
+    .container_cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .servicos {
+        padding: 6rem 2rem;
+    }
+
+    .container_content_servicos {
+        gap: 3rem;
+    }
+
+    .servicos_titulo h2 {
+        font-size: 2.3rem;
+    }
+
+    .servicos_titulo p {
+        font-size: 1.3rem;
+        width: 70%;
+    }
+
+    .container_cards_servicos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        max-width: 900px;
+    }
+
+    .container_contato {
+        padding: 6rem 2rem;
+    }
+
+    .contato_texto {
+        width: 80%;
+        gap: 2rem;
+    }
+
+    .contato_texto h2 {
+        font-size: 2rem;
+    }
+
+    .contato_texto p {
+        font-size: 1.2rem;
+    }
+
+    .beneficios,
+    .servicos,
+    .container_contato {
+        scroll-margin-top: 8rem;
+    }
+}
+
+/* Desktop - 1024px and up */
+@media (min-width: 1024px) {
+    .home {
+        padding-top: 10rem;
+    }
+
+    .section_content_home {
+        flex-direction: row;
+        justify-content: space-between;
+        padding-bottom: 10.3rem;
+    }
+
+    .container_texto {
+        gap: 40px;
+    }
+
+    .container_texto h1 {
+        font-size: 4rem;
+        line-height: 6rem;
+        margin-bottom: 4rem;
+    }
+
+    .container_texto p {
+        font-size: 1.2rem;
+        line-height: 2rem;
+        padding: 0 13px;
+    }
+
+    #carrosel {
+        width: 60%;
+    }
+
+    .nav_btn.left {
+        left: 110px;
+    }
+
+    .nav_btn.right {
+        right: 110px;
+    }
+
+    .beneficios {
+        padding: 12rem 2rem 8rem 2rem;
+        gap: 60px;
+    }
+
+    .titulo_beneficios {
+        line-height: 2.8rem;
+    }
+
+    .titulo_beneficios h2 {
+        font-size: 2.8rem;
+    }
+
+    .titulo_beneficios p {
+        font-size: 1.5rem;
+    }
+
+    .container_cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+
+    .card {
+        gap: 30px;
+        min-height: 320px;
+    }
+
+    .card_texto {
+        gap: 40px;
+    }
+
+    .card_texto h3 {
+        font-size: 1.5rem;
+    }
+
+    .servicos {
+        padding: 10rem 2rem;
+    }
+
+    .container_content_servicos {
+        padding-bottom: 3rem;
+        gap: 60px;
+    }
+
+    .servicos_titulo h2 {
+        font-size: 2.8rem;
+        line-height: 1.7;
+    }
+
+    .servicos_titulo p {
+        font-size: 1.4rem;
+        width: 60%;
+    }
+
+    .container_cards_servicos {
+        grid-template-columns: repeat(3, 400px);
+        gap: 2rem;
+    }
+
+    .servicos_card {
+        max-height: 390px;
+    }
+
+    .servicos_texto {
+        min-height: 180px;
+    }
+
+    .servicos_texto h3 {
+        font-size: 1.35rem;
+        line-height: 1.75rem;
+        min-height: 56px;
+        width: 80%;
+    }
+
+    .servicos_texto p {
+        font-size: 1.09rem;
+    }
+
+    .container_contato {
+        padding: 12rem 2rem 5rem 2rem;
+    }
+
+    .contato_texto {
+        width: 60%;
+        gap: 60px;
+    }
+
+    .contato_texto h2 {
+        font-size: 2.1rem;
+    }
+
+    .contato_texto p {
+        font-size: 1.26rem;
+        line-height: 2rem;
+    }
+
+    button {
+        font-size: 18px;
+    }
+
+    .beneficios,
+    .servicos,
+    .container_contato {
+        scroll-margin-top: 10rem;
+    }
+}
+
+/* Large Desktop - 1440px and up */
+@media (min-width: 1440px) {
+    .container_texto h1 {
+        font-size: 4.5rem;
+    }
+
+    .titulo_beneficios h2 {
+        font-size: 3rem;
+    }
+
+    .servicos_titulo h2 {
+        font-size: 3rem;
+    }
+
+    .contato_texto h2 {
+        font-size: 2.5rem;
+    }
+}

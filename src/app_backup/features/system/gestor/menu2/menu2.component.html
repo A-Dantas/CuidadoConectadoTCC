@@ -1,0 +1,539 @@
+<main class="gerenciamento_pacientes">
+    <header class="cabecalho_controles">
+        <h1 class="titulo_pagina">Gestão de Pacientes</h1>
+        <button class="btn-novo-paciente" (click)="abrirModalCadastro()">
+            <span class="plus-icon">+</span>
+            Cadastrar Novo Paciente
+        </button>
+    </header>
+
+    <section class="lista_pacientes">
+        @if (pacientes.length === 0) {
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                <path
+                    d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z">
+                </path>
+            </svg>
+            <h3>Nenhum paciente cadastrado</h3>
+            <p>Não há pacientes cadastrados no sistema. Cadastre um novo paciente para começar.</p>
+        </div>
+        }
+
+        @for (paciente of pacientes; track paciente.nomePaciente; let i = $index) {
+        <div class="card card_paciente">
+            <div class="card-header-actions">
+                <div class="card-actions">
+                    <button class="action-icon edit-icon" (click)="abrirModalEdicao(paciente, i)" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+                            fill="currentColor">
+                            <path
+                                d="M16.757 3L6 13.757 6 18 10.243 18 21 7.243 21 3 16.757 3zM18.5 5.5L18.5 6.757 17.243 8.015 16.985 7.757 16.985 5.5 18.5 5.5zM4 20L4 22 20 22 20 20 4 20z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button class="action-icon delete-icon" (click)="abrirModalConfirmacaoExclusao(i)" title="Excluir">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+                            fill="currentColor">
+                            <path
+                                d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-content">
+                <div class="card-header-info">
+                    <div class="info_pessoal">
+                        <div class="avatar-miniatura">
+                            @if (paciente.foto) {
+                                <img [src]="paciente.foto" alt="Foto">
+                            } @else {
+                                👴
+                            }
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <h4 class="nome_paciente">{{paciente.nomePaciente}}</h4>
+                            <p class="idade_paciente">Idade: {{paciente.idade || 'N/A'}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p class="endereco_paciente">{{paciente.endereco || 'Endereço não informado'}}</p>
+
+                    <div class="condicoes_paciente">
+                        @if (getComorbidadesArray(paciente.comorbidades).length > 0) {
+                        @if (isComorbidadesExpandido(i)) {
+                        <!-- Mostrar todas as comorbidades quando expandido -->
+                        @for (comorbidade of getComorbidadesArray(paciente.comorbidades); track comorbidade) {
+                        <span class="tag tag_comorbidade">{{comorbidade}}</span>
+                        }
+                        <span class="tag tag_mais tag_clickable" (click)="toggleComorbidades(i)">mostrar menos</span>
+                        } @else {
+                        <!-- Mostrar apenas as primeiras 2 quando recolhido -->
+                        @for (comorbidade of getComorbidadesArray(paciente.comorbidades).slice(0, 2); track comorbidade)
+                        {
+                        <span class="tag tag_comorbidade">{{comorbidade}}</span>
+                        }
+                        @if (getComorbidadesArray(paciente.comorbidades).length > 2) {
+                        <span class="tag tag_mais tag_clickable"
+                            (click)="toggleComorbidades(i)">+{{getComorbidadesArray(paciente.comorbidades).length - 2}}
+                            mais</span>
+                        }
+                        }
+                        } @else {
+                        <span class="tag tag_comorbidade">Sem comorbidades</span>
+                        }
+                    </div>
+
+                    <div class="responsaveis_info">
+                        <div class="responsavel_item">
+                            <span class="responsavel_label">Médico:</span>
+                            <span class="responsavel_nome">{{paciente.medicoAtribuido || 'Não atribuído'}}</span>
+                        </div>
+                        <div class="responsavel_item">
+                            <span class="responsavel_label">Familiar:</span>
+                            <span class="responsavel_nome">{{paciente.contatoFamiliar || 'Não atribuído'}}</span>
+                        </div>
+                    </div>
+
+                    <!-- Plantão do Dia -->
+                    <div class="plantao_dia_info">
+                        <div class="plantao_header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+                                fill="currentColor">
+                                <path
+                                    d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z">
+                                </path>
+                            </svg>
+                            <span class="plantao_data">Plantão de Hoje - {{getDataHoje()}}</span>
+                        </div>
+                        <div class="plantao_cuidadores">
+                            @if (getPlantoesDoDia(paciente).length > 0) {
+                            @for (plantao of getPlantoesDoDia(paciente); track plantao.cuidador) {
+                            <div class="plantao_item">
+                                <span class="plantao_cuidador">{{plantao.cuidador}}</span>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span class="plantao_horario">{{plantao.horario}}</span>
+
+                                    @if (getStatusPlantao(plantao.code, plantao.origin) === 'ANDAMENTO') {
+                                    <span class="status_andamento">Em andamento</span>
+                                    }
+                                    @if (getStatusPlantao(plantao.code, plantao.origin) === 'FINALIZADO') {
+                                    <span class="status_finalizado">Finalizado</span>
+                                    }
+
+                                    @if (getTerminoPrevisto(plantao.code, plantao.origin)) {
+                                    <span class="info_termino">{{ getTerminoPrevisto(plantao.code, plantao.origin)
+                                        }}</span>
+                                    }
+                                </div>
+                            </div>
+                            }
+                            } @else {
+                            <div class="plantao_vazio">
+                                <span>Nenhum plantão agendado para hoje</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </section>
+
+</main>
+
+@if (modalEdicaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Editar Paciente</h2>
+            <button class="close-btn" (click)="fecharModalEdicao()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Nome do Paciente</label>
+                    <input type="text" class="form-input" placeholder="Digite o nome do paciente"
+                        [(ngModel)]="pacienteEditando.nomePaciente">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>CPF</label>
+                    <input type="text" class="form-input" placeholder="000.000.000-00"
+                        [(ngModel)]="pacienteEditando.cpf" (input)="formatarCPF($event, pacienteEditando)"
+                        maxlength="14">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" placeholder="DD/MM/AAAA"
+                        [(ngModel)]="pacienteEditando.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', pacienteEditando, atualizarIdadePacienteEdicao.bind(this))"
+                        maxlength="10">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Idade</label>
+                    <input type="number" class="form-input" placeholder="Idade"
+                        [(ngModel)]="pacienteEditando.idade" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Rua</label>
+                <input type="text" class="form-input" placeholder="Digite o nome da rua"
+                    [(ngModel)]="pacienteEditando.rua">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-small">
+                    <label>Número</label>
+                    <input type="text" class="form-input" placeholder="Nº" [(ngModel)]="pacienteEditando.numero">
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input" placeholder="Digite o bairro"
+                        [(ngModel)]="pacienteEditando.bairro">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input" placeholder="Digite a cidade"
+                        [(ngModel)]="pacienteEditando.cidade">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Estado</label>
+                    <input type="text" class="form-input" placeholder="UF" [(ngModel)]="pacienteEditando.estado"
+                        (input)="validarNome($event, 'estado', pacienteEditando)" maxlength="2">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Comorbidades</label>
+                @for (comorbidade of comorbidadesListEdicao; track $index; let i = $index) {
+                <div class="comorbidade-row">
+                    <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                        [(ngModel)]="comorbidadesListEdicao[i]">
+                    @if (comorbidadesListEdicao.length > 1) {
+                    <button type="button" class="btn-remove-comorbidade"
+                        (click)="removerComorbidadeEdicao(i)">&times;</button>
+                    }
+                </div>
+                }
+                <button type="button" class="btn-add-comorbidade" (click)="adicionarComorbidadeEdicao()">
+                    <span class="plus-icon">+</span>
+                    Adicionar Comorbidade
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Cuidador Atribuído</label>
+                <select class="form-select" [(ngModel)]="pacienteEditando.cuidadorAtribuido">
+                    <option value="">Não atribuído</option>
+                    <option *ngFor="let cuidador of cuidadores" [value]="cuidador">{{cuidador}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Médico Atribuído</label>
+                <select class="form-select" [(ngModel)]="pacienteEditando.medicoAtribuido">
+                    <option value="">Não atribuído</option>
+                    <option *ngFor="let medico of medicos" [value]="medico">{{medico}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Contato Familiar</label>
+                <select class="form-select" [(ngModel)]="pacienteEditando.contatoFamiliar">
+                    <option value="" disabled>Selecione um familiar</option>
+                    <option *ngFor="let familiar of familiaresFiltrados" [value]="familiar">{{familiar}}</option>
+                </select>
+                @if (familiaresFiltrados.length === 0 && pacienteEditando.cpf) {
+                  <small style="color: #666; margin-top: 4px; display: block;">Nenhum familiar vinculado a este CPF encontrado.</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea class="form-input" rows="3" [(ngModel)]="pacienteEditando.observacoes" placeholder="Outras informações clínicas..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Paciente</label>
+                <div class="perfil-foto-upload">
+                    <div class="foto-preview">
+                        @if (pacienteEditando.foto) {
+                            <img [src]="pacienteEditando.foto" alt="Preview">
+                        } @else {
+                            <div class="placeholder-icon">👴</div>
+                        }
+                    </div>
+                    <div class="upload-controls">
+                        <label for="fotoEditInput" class="btn-upload">Alterar Foto</label>
+                        <input type="file" id="fotoEditInput" (change)="onFotoSelecionada($event, 'edicao')" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-add" (click)="salvarEdicao()">Salvar</button>
+            <button class="btn-cancel" (click)="fecharModalEdicao()">Cancelar</button>
+        </div>
+    </div>
+</div>
+}
+
+@if (modalSucessoEdicaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Sucesso!</h2>
+        </div>
+
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path
+                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11.0026 16L18.0737 8.92893L16.6595 7.51472L11.0026 13.1716L8.17421 10.3431L6.75999 11.7574L11.0026 16Z">
+                    </path>
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Alterações feitas com sucesso!</p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoEdicao()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+@if (modalConfirmacaoExclusaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-confirmacao" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Confirmar Exclusão</h2>
+        </div>
+
+        <div class="modal-body">
+            <div class="confirmacao-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path
+                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z">
+                    </path>
+                </svg>
+            </div>
+            <p class="confirmacao-mensagem">Tem certeza que deseja excluir este paciente?</p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-delete" (click)="confirmarExclusao()">Excluir</button>
+            <button class="btn-cancel" (click)="fecharModalConfirmacaoExclusao()">Cancelar</button>
+        </div>
+    </div>
+</div>
+}
+
+@if (modalSucessoExclusaoAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Sucesso!</h2>
+        </div>
+
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path
+                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11.0026 16L18.0737 8.92893L16.6595 7.51472L11.0026 13.1716L8.17421 10.3431L6.75999 11.7574L11.0026 16Z">
+                    </path>
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Paciente excluído com sucesso!</p>
+        </div>
+ 
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoExclusao()">OK</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Modal de Cadastro -->
+@if (modalCadastroAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Cadastrar Novo Paciente</h2>
+            <button class="close-btn" (click)="fecharModalCadastro()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Nome do Paciente</label>
+                    <input type="text" class="form-input" placeholder="Digite o nome do paciente"
+                        [(ngModel)]="pacienteCadastro.nomePaciente">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>CPF</label>
+                    <input type="text" class="form-input" placeholder="000.000.000-00"
+                        [(ngModel)]="pacienteCadastro.cpf" (input)="formatarCPF($event, pacienteCadastro)"
+                        maxlength="14">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Data de Nascimento</label>
+                    <input type="text" class="form-input" placeholder="DD/MM/AAAA"
+                        [(ngModel)]="pacienteCadastro.dataNascimento"
+                        (input)="formatarDataBR($event, 'dataNascimento', pacienteCadastro, atualizarIdadePacienteCadastro.bind(this))"
+                        maxlength="10">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Idade</label>
+                    <input type="number" class="form-input" placeholder="Idade"
+                        [(ngModel)]="pacienteCadastro.idade" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Rua</label>
+                <input type="text" class="form-input" placeholder="Digite o nome da rua"
+                    [(ngModel)]="pacienteCadastro.rua">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-small">
+                    <label>Número</label>
+                    <input type="text" class="form-input" placeholder="Nº" [(ngModel)]="pacienteCadastro.numero">
+                </div>
+                <div class="form-group form-group-large">
+                    <label>Bairro</label>
+                    <input type="text" class="form-input" placeholder="Digite o bairro"
+                        [(ngModel)]="pacienteCadastro.bairro">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-large">
+                    <label>Cidade</label>
+                    <input type="text" class="form-input" placeholder="Digite a cidade"
+                        [(ngModel)]="pacienteCadastro.cidade">
+                </div>
+                <div class="form-group form-group-small">
+                    <label>Estado</label>
+                    <input type="text" class="form-input" placeholder="UF" [(ngModel)]="pacienteCadastro.estado"
+                        (input)="validarNome($event, 'estado', pacienteCadastro)" maxlength="2">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Comorbidades</label>
+                @for (comorbidade of comorbidadesListCadastro; track $index; let i = $index) {
+                <div class="comorbidade-row">
+                    <input type="text" class="form-input" placeholder="Descreva a comorbidade"
+                        [(ngModel)]="comorbidadesListCadastro[i]">
+                    @if (comorbidadesListCadastro.length > 1) {
+                    <button type="button" class="btn-remove-comorbidade"
+                        (click)="removerComorbidadeCadastro(i)">&times;</button>
+                    }
+                </div>
+                }
+                <button type="button" class="btn-add-comorbidade" (click)="adicionarComorbidadeCadastro()">
+                    <span class="plus-icon">+</span>
+                    Adicionar Comorbidade
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Cuidador Atribuído</label>
+                <select class="form-select" [(ngModel)]="pacienteCadastro.cuidadorAtribuido">
+                    <option value="">Não atribuído</option>
+                    <option *ngFor="let cuidador of cuidadores" [value]="cuidador">{{cuidador}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Médico Atribuído</label>
+                <select class="form-select" [(ngModel)]="pacienteCadastro.medicoAtribuido">
+                    <option value="">Não atribuído</option>
+                    <option *ngFor="let medico of medicos" [value]="medico">{{medico}}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Contato Familiar</label>
+                <select class="form-select" [(ngModel)]="pacienteCadastro.contatoFamiliar">
+                    <option value="">Selecione um familiar</option>
+                    <option *ngFor="let familiar of familiaresFiltrados" [value]="familiar">{{familiar}}</option>
+                </select>
+                @if (familiaresFiltrados.length === 0 && pacienteCadastro.cpf) {
+                  <small style="color: #666; margin-top: 4px; display: block;">Nenhum familiar vinculado a este CPF encontrado.</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea class="form-input" rows="3" [(ngModel)]="pacienteCadastro.observacoes" placeholder="Outras informações clínicas..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Paciente</label>
+                <div class="perfil-foto-upload">
+                    <div class="foto-preview">
+                        @if (pacienteCadastro.foto) {
+                            <img [src]="pacienteCadastro.foto" alt="Preview">
+                        } @else {
+                            <div class="placeholder-icon">👴</div>
+                        }
+                    </div>
+                    <div class="upload-controls">
+                        <label for="fotoCadInput" class="btn-upload">Incluir Foto</label>
+                        <input type="file" id="fotoCadInput" (change)="onFotoSelecionada($event, 'cadastro')" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-add" (click)="salvarCadastro()">Cadastrar</button>
+            <button class="btn-cancel" (click)="fecharModalCadastro()">Cancelar</button>
+        </div>
+    </div>
+</div>
+}
+
+@if (modalSucessoCadastroAberto) {
+<div class="modal-overlay" (click)="handleOverlayClick()">
+    <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Sucesso!</h2>
+        </div>
+
+        <div class="modal-body">
+            <div class="sucesso-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path
+                        d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11.0026 16L18.0737 8.92893L16.6595 7.51472L11.0026 13.1716L8.17421 10.3431L6.75999 11.7574L11.0026 16Z">
+                    </path>
+                </svg>
+            </div>
+            <p class="sucesso-mensagem">Paciente cadastrado com sucesso!</p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-ok" (click)="fecharModalSucessoCadastro()">OK</button>
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,173 @@
+<div class="curriculos-container">
+    <header class="header">
+        <h1 class="page-title">Gestão de Currículos</h1>
+        <div class="search-section">
+            <input type="text" class="search-input" placeholder="Buscar por nome ou email..." [(ngModel)]="filtroBusca">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="search-icon">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+        </div>
+    </header>
+
+    <div class="curriculos-grid">
+        @if (curriculosFiltrados.length === 0) {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path d="M13 2L3 2V22H21V10L15 10L15 4L13 4V2ZM15 2V8H21L15 2ZM5 4H11V6H5V4ZM5 8H11V10H5V8ZM5 12H19V14H5V12ZM5 16H19V18H5V16Z"></path>
+                </svg>
+                <h3>Nenhum currículo pendente</h3>
+                <p>No momento não há novos cuidadores aguardando aprovação.</p>
+            </div>
+        }
+
+        @for (item of curriculosFiltrados; track item.email) {
+            <div class="curriculo-card" (click)="abrirDetalhes(item)">
+                <div class="card-status-badge">PENDENTE</div>
+                <div class="user-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                    </svg>
+                </div>
+                <div class="curriculo-info">
+                    <h3 class="user-name">{{ item.userName }} {{ item.sobrenome }}</h3>
+                    <p class="user-exp">Experiência: {{ item.tempoExperiencia }}</p>
+                    <p class="user-email">{{ item.email }}</p>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-detalhes">Ver Perfil</button>
+                    <div class="pdf-badge" *ngIf="item.curriculoPdf">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L19 9V22H5V2H12ZM13 9H18L13 4V9ZM7 4V20H17V11H12V4H7Z"></path>
+                        </svg>
+                        PDF
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal de Detalhes -->
+@if (modalDetalhesAberto && usuarioSelecionado) {
+    <div class="modal-overlay" (click)="fecharDetalhes()">
+        <div class="modal-container" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="header-profile">
+                    <div class="header-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>{{ usuarioSelecionado.userName }} {{ usuarioSelecionado.sobrenome }}</h2>
+                        <span class="badge-role">CANDIDATO A CUIDADOR</span>
+                    </div>
+                </div>
+                <button class="close-btn" (click)="fecharDetalhes()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="info-section">
+                    <h3>Informações de Contato</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Email</span>
+                            <span class="value">{{ usuarioSelecionado.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Telefone</span>
+                            <span class="value">{{ usuarioSelecionado.telefone }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Whatsapp</span>
+                            <span class="value">{{ usuarioSelecionado.whatsapp }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>Qualificações</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Tempo de Experiência</span>
+                            <span class="value">{{ usuarioSelecionado.tempoExperiencia }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Chave Pix</span>
+                            <span class="value">{{ usuarioSelecionado.chavePix }}</span>
+                        </div>
+                    </div>
+                    <div class="comorbidades-tags">
+                        <span class="label">Experiência com:</span>
+                        <div class="tags-container">
+                            @for (tag of usuarioSelecionado.experienciaComorbidadesList; track tag) {
+                                <span class="tag">{{ tag }}</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section" *ngIf="usuarioSelecionado.curriculoPdf">
+                    <h3>Documentação</h3>
+                    <div class="pdf-viewer-link" (click)="visualizarPdf()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L19 9V22H5V2H12ZM13 9H18L13 4V9ZM7 4V20H17V11H12V4H7Z"></path>
+                        </svg>
+                        <span>Currículo Completo (PDF)</span>
+                        <button class="btn-download" (click)="$event.stopPropagation(); baixarPdf()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 20H19V18H5V20ZM12 16L17 11H14V4H10V11H7L12 16Z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-recusar" (click)="fecharDetalhes()">Manter em Análise</button>
+                <button class="btn-ativar" (click)="ativarCadastro()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path>
+                    </svg>
+                    Ativar Cadastro
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Sucesso na Ativação -->
+@if (modalSucessoAtivacaoAberto && usuarioAtivadoCredenciais) {
+    <div class="modal-overlay" (click)="fecharModalSucesso()">
+        <div class="modal-container modal-sucesso" (click)="$event.stopPropagation()">
+            <div class="sucesso-header">
+                <div class="sucesso-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="white" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <h2>Cadastro Ativado!</h2>
+                <p>O cuidador {{ usuarioAtivadoCredenciais.userName }} já pode acessar o sistema.</p>
+            </div>
+
+            <div class="email-simulacao">
+                <div class="email-header">
+                    <span>Para: <strong>{{ usuarioAtivadoCredenciais.email }}</strong></span>
+                    <span>Assunto: Bem-vindo ao Cuidado Conectado</span>
+                </div>
+                <div class="email-body">
+                    <p>Olá {{ usuarioAtivadoCredenciais.userName }}, seu cadastro foi aprovado!</p>
+                    <p>Aqui estão suas credenciais de acesso:</p>
+                    <div class="credenciais-box">
+                        <div><span>Login:</span> <strong>{{ usuarioAtivadoCredenciais.login }}</strong></div>
+                        <div><span>Senha:</span> <strong>{{ usuarioAtivadoCredenciais.password }}</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-finalizar" (click)="fecharModalSucesso()">Concluído</button>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,451 @@
+.curriculos-container {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #f8fafc;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 24px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.search-section {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.search-input:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+/* Grid Layout */
+.curriculos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+.empty-state h3 {
+    margin: 20px 0 10px;
+    color: #475569;
+}
+
+/* Card Style */
+.curriculo-card {
+    background-color: white;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.curriculo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #14b8a6;
+}
+
+.card-status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 8px;
+    background-color: #fef9c3;
+    color: #854d0e;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+.user-avatar {
+    width: 64px;
+    height: 64px;
+    background-color: #f0fdfa;
+    color: #14b8a6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.user-name {
+    font-size: 18px;
+    color: #1e293b;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.user-exp {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.user-email {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 15px;
+}
+
+.card-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-detalhes {
+    padding: 8px 20px;
+    background-color: #14b8a6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-detalhes:hover {
+    background-color: #0d9488;
+}
+
+.pdf-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-container {
+    background-color: white;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    padding: 25px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-profile h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.badge-role {
+    font-size: 11px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 25px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.info-section {
+    margin-bottom: 25px;
+}
+
+.info-section h3 {
+    font-size: 16px;
+    color: #1e293b;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+
+.value {
+    font-weight: 600;
+    color: #334155;
+    font-size: 14px;
+}
+
+.comorbidades-tags {
+    margin-top: 15px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tag {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.pdf-viewer-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    border-radius: 12px;
+    color: #b91c1c;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pdf-viewer-link:hover {
+    background-color: #fecaca;
+}
+
+.btn-download {
+    margin-left: auto;
+    background: white;
+    border: 1px solid #fee2e2;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b91c1c;
+    cursor: pointer;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    background-color: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn-recusar {
+    padding: 10px 20px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.btn-ativar {
+    padding: 10px 20px;
+    background-color: #14b8a6;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-ativar:hover {
+    background-color: #0d9488;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+/* Success Modal Specifics */
+.modal-sucesso {
+    max-width: 450px;
+    text-align: center;
+}
+
+.sucesso-header {
+    padding: 40px 25px 25px;
+}
+
+.sucesso-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 10px 20px rgba(20, 184, 166, 0.2);
+}
+
+.sucesso-header h2 {
+    color: #0f172a;
+    margin: 0 0 10px;
+}
+
+.email-simulacao {
+    margin: 0 25px 25px;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    font-size: 13px;
+}
+
+.email-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #64748b;
+}
+
+.email-body {
+    padding: 15px;
+    color: #334155;
+}
+
+.credenciais-box {
+    margin-top: 15px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed #14b8a6;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.credenciais-box strong {
+    color: #0d9488;
+}
+
+.btn-finalizar {
+    width: 100%;
+    padding: 12px;
+    background-color: #14b8a6;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}

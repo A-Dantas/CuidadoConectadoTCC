@@ -132,6 +132,9 @@ export class Menu3Component implements OnInit, OnDestroy {
     // Evita abrir o cartão ao clicar no botão de editar
     // O evento de clique no card deve ser tratado separadamente dos botões de ação
     this.usuarioEditando = { ...usuario };
+    if (!this.usuarioEditando.tipoChavePix) {
+        this.usuarioEditando.tipoChavePix = 'CPF';
+    }
     this.indiceEditando = index;
     this.modalEdicaoAberto = true;
   }
@@ -331,6 +334,7 @@ export class Menu3Component implements OnInit, OnDestroy {
       tempoExperiencia: '',
       experienciaComorbidadesList: [''],
       cpfPacienteResponsavel: '',
+      tipoChavePix: 'CPF',
       login: '',
       password: ''
     };

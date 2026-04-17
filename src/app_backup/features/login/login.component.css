@@ -1,0 +1,282 @@
+main {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.container_forms {
+    width: 100%;
+    max-width: 650px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    border: 2px solid var(--cor_gradient_1);
+    border-radius: 6px;
+    scroll-padding-top: 200px;
+    margin: 5rem auto 2rem auto;
+    background-color: rgba(245, 245, 245, 0.756);
+}
+
+.forms {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.forms_header h2 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.forms_header p {
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.forms_header span {
+    font-weight: 500;
+}
+
+.options_container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.campos_login {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+}
+
+.options label,
+select {
+    font-size: 0.85rem;
+}
+
+.options label {
+    font-weight: 500;
+}
+
+.options :placeholder-shown,
+select {
+    font-size: 0.76rem;
+    font-weight: 450;
+    display: flex;
+}
+
+.options input,
+select {
+    border: 1px solid var(--cor_gradient_1);
+    height: 35px;
+    border-radius: 4px;
+    text-indent: 5px;
+}
+
+.options input {
+    background-color: white;
+}
+
+.container_texto_botao {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container_texto_botao p {
+    font-size: 0.7rem;
+    line-height: 1.4;
+}
+
+.container_texto_botao p>a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#mais_informacoes textarea {
+    height: 150px;
+    text-align: start;
+    padding-top: 5px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    line-height: 1.2;
+    vertical-align: top;
+    top: 8px;
+    resize: none;
+    border: 1px solid var(--cor_gradient_1);
+    border-radius: 6px;
+}
+
+#mais_informacoes input::placeholder {
+    position: absolute;
+    top: 8px;
+}
+
+#botao_enviar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+button {
+    width: 100%;
+    max-width: 280px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin: 10px 0;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    background: var(--cor_gradient_4);
+    cursor: pointer;
+    transition: ease-out 0.5s;
+    border: 2px solid var(--cor_gradient_4);
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 0 var(--cor_gradient_4);
+}
+
+button:hover {
+    color: white;
+    box-shadow: inset 0 -100px 0 0 var(--cor_gradient_3);
+}
+
+
+button:disabled {
+    background: #9ca3af;
+    border-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    box-shadow: none;
+    color: inherit;
+}
+
+button:disabled:active {
+    transform: none;
+}
+
+/* Tablet - 768px and up */
+@media (min-width: 768px) {
+    main {
+        padding: 2rem;
+    }
+
+    .container_forms {
+        width: 60%;
+        padding: 3rem 2.5rem;
+        margin: 6rem auto 3rem auto;
+    }
+
+    .forms {
+        gap: 2.5rem;
+    }
+
+    .forms_header h2 {
+        font-size: 2.3rem;
+    }
+
+    .forms_header p {
+        font-size: 1.05rem;
+    }
+
+    .options_container {
+        gap: 1.5rem;
+    }
+
+    .campos_login {
+        gap: 1.5rem;
+    }
+
+    .options label,
+    select {
+        font-size: 0.88rem;
+    }
+
+    .container_texto_botao p {
+        font-size: 0.73rem;
+    }
+
+    button {
+        width: 85%;
+        max-width: 320px;
+    }
+}
+
+/* Desktop - 1024px and up */
+@media (min-width: 1024px) {
+    .container_forms {
+        width: 40%;
+        padding: 50px 30px;
+        margin: auto;
+    }
+
+    .forms {
+        gap: 40px;
+    }
+
+    .forms_header h2 {
+        font-size: 2.6rem;
+    }
+
+    .forms_header p {
+        font-size: 1.1rem;
+    }
+
+    .options_container {
+        gap: 20px;
+    }
+
+    .campos_login {
+        gap: 25px;
+    }
+
+    .options label,
+    select {
+        font-size: 0.9rem;
+    }
+
+    .container_texto_botao p {
+        font-size: 0.75rem;
+    }
+
+    button {
+        width: 68%;
+    }
+}
+
+/* Large Desktop - 1440px and up */
+@media (min-width: 1440px) {
+    .container_forms {
+        width: 30%;
+    }
+
+    .forms_header h2 {
+        font-size: 2.8rem;
+    }
+
+    .forms_header p {
+        font-size: 1.15rem;
+    }
+}

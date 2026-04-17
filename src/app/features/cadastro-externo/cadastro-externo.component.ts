@@ -41,7 +41,8 @@ export class CadastroExternoComponent implements OnInit {
     experienciaComorbidades: '',
     tipoUsuario: '',
     experienciaComorbidadesList: [''],
-    cpfPacienteResponsavel: ''
+    cpfPacienteResponsavel: '',
+    tipoChavePix: 'CPF'
   };
 
   novoPaciente: Paciente = {

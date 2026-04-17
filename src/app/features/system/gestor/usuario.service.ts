@@ -31,6 +31,7 @@ export interface Usuario {
     curriculoPdf?: string; 
     isCurriculo?: boolean;
     fotoPerfil?: string;
+    tipoChavePix?: string;
 }
 
 @Injectable({

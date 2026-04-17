@@ -1,0 +1,133 @@
+<div class="schedule-container">
+    <h2 class="page-title">Gerenciamento de Agendamentos</h2>
+
+    <div class="filter-section">
+        <label class="filter-label">Filtrar por Cuidador:</label>
+        <select class="filter-select" [(ngModel)]="filtroCuidador" (ngModelChange)="onCuidadorChange()">
+            <option *ngFor="let cuidador of cuidadores" [value]="cuidador.userName">
+                {{cuidador.userName}} {{cuidador.sobrenome}}
+            </option>
+        </select>
+    </div>
+
+    <div class="calendar-card">
+        <div class="weekdays-row">
+            <div class="weekday" *ngFor="let day of weekDays">{{day}}</div>
+        </div>
+
+        <div class="days-grid">
+            <div class="day-cell" *ngFor="let day of calendarDays" [class.past-day]="isDayPast(day.number)">
+                <div class="day-header" *ngIf="day.number">
+                    <div class="day-number">{{day.number}}</div>
+                    <button class="add-btn" (click)="addSelection(day)" *ngIf="!isDayPast(day.number)">+</button>
+                </div>
+
+                <div class="patient-select-wrapper" *ngIf="day.number">
+                    <div *ngFor="let selection of day.selectedPatients; let i = index; trackBy: trackByIndex"
+                        class="select-row">
+                        <div class="input-row">
+                            <select class="patient-select" [(ngModel)]="day.selectedPatients[i]"
+                                (ngModelChange)="onPatientOrShiftChange(day, i)" [disabled]="isShiftLocked(day, i)">
+                                <option value="" disabled selected>Selecione o Paciente</option>
+                                <ng-container *ngFor="let paciente of pacientes">
+                                    <option
+                                        *ngIf="!isPatientSelected(day, paciente.nomePaciente, i) || day.selectedPatients[i] === paciente.nomePaciente"
+                                        [value]="paciente.nomePaciente">
+                                        {{paciente.nomePaciente}}
+                                    </option>
+                                </ng-container>
+                            </select>
+                            <button class="remove-btn" (click)="removeSelection(day, i)"
+                                *ngIf="!isShiftLocked(day, i)">-</button>
+                            <button class="note-btn" (click)="openObsModal(day, i)" title="Observações do Plantão"
+                                *ngIf="isShiftLocked(day, i)">📝</button>
+                        </div>
+
+                        <!-- Shift selector - only shows when patient is selected -->
+                        <select class="shift-select" [(ngModel)]="day.selectedShifts[i]"
+                            (ngModelChange)="onPatientOrShiftChange(day, i)" *ngIf="day.selectedPatients[i]"
+                            [disabled]="isShiftLocked(day, i)">
+                            <option value="" disabled selected>Selecione o Turno</option>
+                            <option value="MT">MT (7h ~ 19h)</option>
+                            <option value="SN">SN (19h ~ 7h)</option>
+                            <option value="24H_7H">24h (Início 7h)</option>
+                            <option value="24H_19H">24h (Início 19h)</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="events-container">
+                    <div class="event-chip" *ngFor="let event of day.events">
+                        {{event}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conflict Modal -->
+<div class="modal-overlay" *ngIf="modalConflictOpen" (click)="closeConflictModal()">
+    <div class="conflict-modal" (click)="$event.stopPropagation()">
+        <div class="modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path
+                    d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" />
+            </svg>
+        </div>
+        <h2 class="modal-title">Conflito de Horário!</h2>
+        <p class="modal-message">{{conflictMessage}}</p>
+        <button class="modal-btn" (click)="closeConflictModal()">OK</button>
+    </div>
+</div>
+
+<!-- Observation Modal -->
+<div class="modal-overlay" *ngIf="modalObsOpen" (click)="closeObsModal()">
+    <div class="conflict-modal obs-modal" (click)="$event.stopPropagation()">
+        <h2 class="modal-title">Observações do Plantão</h2>
+        <p class="subtitle_secao" style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
+            Adicione notas ou informes sobre substituições para este horário.
+        </p>
+        
+        <textarea class="obs-textarea" [(ngModel)]="currentObsText" placeholder="Ex: Cuidador foi substituido."></textarea>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+            <button style="background: none; border: none; color: #0ea5e9; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none;" (click)="openHistoryModal()">Historico de atualizações ></button>
+        </div>
+
+        <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-cancel" (click)="closeObsModal()" style="flex: 1; background: #e2e8f0; color: #475569; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancelar</button>
+            <button class="modal-btn" (click)="saveObs()" style="flex: 1; margin: 0;">Salvar Observação</button>
+        </div>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal-overlay" *ngIf="modalHistoryOpen" (click)="closeHistoryModal()">
+    <div class="conflict-modal obs-modal" (click)="$event.stopPropagation()">
+        <h2 class="modal-title">Histórico de Atualizações</h2>
+        <p class="subtitle_secao" style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
+            Registro de todas as alterações feitas neste plantão.
+        </p>
+        
+        <div class="history-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background-color: #f8fafc; text-align: left;">
+            <div *ngIf="!currentObsHistory || currentObsHistory.length === 0" style="text-align: center; color: #64748b; padding: 20px 0;">
+                Nenhum histórico registrado para este plantão.
+            </div>
+            <div class="history-item" *ngFor="let item of currentObsHistory" style="border-bottom: 1px solid #e2e8f0; padding: 12px 0;">
+                <div class="history-time" style="font-size: 13px; color: #0d9488; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                    </svg> 
+                    {{item.time !== 'Registro Anterior' ? item.time : 'Data desconhecida (Anotação antiga)'}}
+                </div>
+                <div class="history-text" style="font-size: 14px; color: #1e293b; white-space: pre-wrap; margin-left: 2px;">{{item.text}}</div>
+            </div>
+        </div>
+        
+        <button class="btn-cancel" (click)="closeHistoryModal()" style="width: 100%; background: #e2e8f0; color: #475569; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Voltar</button>
+    </div>
+</div>

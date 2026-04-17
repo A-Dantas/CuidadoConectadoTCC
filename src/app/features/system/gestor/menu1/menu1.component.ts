@@ -76,7 +76,8 @@ export class Menu1Component implements OnInit, OnDestroy {
     tempoExperiencia: '',
     experienciaComorbidades: '',
     tipoUsuario: '',
-    experienciaComorbidadesList: ['']
+    experienciaComorbidadesList: [''],
+    tipoChavePix: 'CPF'
   };
 
   experienciaComorbidadesUsuarioList: string[] = [''];
@@ -98,7 +99,8 @@ export class Menu1Component implements OnInit, OnDestroy {
     chavePix: '',
     whatsapp: '',
     tempoExperiencia: '',
-    experienciaComorbidades: ''
+    experienciaComorbidades: '',
+    tipoChavePix: 'CPF'
   };
 
   novoMedico: Usuario = {
@@ -688,7 +690,8 @@ export class Menu1Component implements OnInit, OnDestroy {
       chavePix: '',
       whatsapp: '',
       tempoExperiencia: '',
-      experienciaComorbidades: ''
+      experienciaComorbidades: '',
+      tipoChavePix: 'CPF'
     };
     this.experienciaComorbidadesList = [''];
   }
@@ -927,7 +930,8 @@ export class Menu1Component implements OnInit, OnDestroy {
       tempoExperiencia: '',
       experienciaComorbidades: '',
       tipoUsuario: '',
-      experienciaComorbidadesList: ['']
+      experienciaComorbidadesList: [''],
+      tipoChavePix: 'CPF'
     };
     this.experienciaComorbidadesUsuarioList = [''];
   }

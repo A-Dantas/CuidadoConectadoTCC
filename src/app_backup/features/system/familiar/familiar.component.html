@@ -1,0 +1,21 @@
+<app-header-system></app-header-system>
+<main>
+    <section class="container_principal">
+        <div class="header_menu_lateral">
+            <app-menu-lateral-system (menuSelecionadoChange)="onMenuChange($event)">
+            </app-menu-lateral-system>
+        </div>
+        
+        <div>
+            @if (menuAtivo === 1) {
+                <app-menu1-familiar [paciente]="pacienteVinculado" [loading]="isLoading"></app-menu1-familiar>
+            }
+            @if (menuAtivo === 2) {
+                <app-menu2-familiar [plantoes]="proximosPlantoes" [loading]="isLoading" (irParaLinhaDoTempo)="selecionarMenu(3)"></app-menu2-familiar>
+            }
+            @if (menuAtivo === 3) {
+                <app-menu3-familiar [evolutions]="evolutions" [loading]="isLoading"></app-menu3-familiar>
+            }
+        </div>
+    </section>
+</main>

@@ -215,10 +215,24 @@
                     [(ngModel)]="usuarioEditando.tempoExperiencia">
             </div>
 
-            <div class="form-group">
-                <label>Chave Pix</label>
-                <input type="text" class="form-input" placeholder="CPF, Email, Telefone ou Chave Aleatória"
-                    [(ngModel)]="usuarioEditando.chavePix">
+            <div class="form-row" *ngIf="usuarioEditando.role === 'Caregiver'">
+                <div class="form-group form-group-small" style="flex: 0 0 150px;">
+                    <label>Tipo de PIX</label>
+                    <select class="form-input" [(ngModel)]="usuarioEditando.tipoChavePix">
+                        <option value="CPF">CPF</option>
+                        <option value="Email">E-mail</option>
+                        <option value="Telefone">Telefone</option>
+                        <option value="Chave Aleatória">Chave Aleatória</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Chave Pix</label>
+                    <input type="text" class="form-input" 
+                        [placeholder]="usuarioEditando.tipoChavePix === 'CPF' ? '000.000.000-00' : 
+                                      usuarioEditando.tipoChavePix === 'Email' ? 'email@exemplo.com' :
+                                      usuarioEditando.tipoChavePix === 'Telefone' ? '(00) 00000-0000' : 'Chave Aleatória'" 
+                        [(ngModel)]="usuarioEditando.chavePix">
+                </div>
             </div>
 
             <div class="form-group">
