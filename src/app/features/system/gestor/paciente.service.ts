@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { INITIAL_PACIENTES } from '../../../core/data/seed-data';
+import { Firestore, collection, collectionData, doc, setDoc, deleteDoc } from '@angular/fire/firestore';
+import { NotificationService } from '../../../core/services/notification.service';
 
 export interface Paciente {
     nomePaciente: string;
@@ -12,81 +14,84 @@ export interface Paciente {
     bairro: string;
     cidade: string;
     estado: string;
-    endereco: string; // Mantido para compatibilidade, será gerado automaticamente
+    endereco: string;
     comorbidades: string;
     cuidadorAtribuido: string;
     medicoAtribuido: string;
     contatoFamiliar: string;
-    
-    // Novos campos
     observacoes?: string;
-    foto?: string; // Base64
+    foto?: string;
 }
-
 
 @Injectable({
     providedIn: 'root'
 })
 export class PacienteService {
-    private readonly STORAGE_KEY = 'pacientes_data';
-    private pacientesSubject = new BehaviorSubject<Paciente[]>(this.carregarPacientes());
+    private pacientesSubject = new BehaviorSubject<Paciente[]>([]);
     public pacientes$: Observable<Paciente[]> = this.pacientesSubject.asObservable();
+    private firestore = inject(Firestore);
+    private pacientesCollection = collection(this.firestore, 'pacientes');
+    private firstLoad = true;
+    private notificationService = inject(NotificationService);
 
-    constructor() { }
-
-    private carregarPacientes(): Paciente[] {
-        try {
-            const data = localStorage.getItem(this.STORAGE_KEY);
-            if (data) {
-                return JSON.parse(data);
-            } else {
-                // Se não houver dados, carregar seed data e salvar
-                const seedData = INITIAL_PACIENTES;
-                this.salvarPacientes(seedData);
-                return seedData;
-            }
-        } catch (error) {
-            console.error('Erro ao carregar pacientes do localStorage:', error);
-            return [];
-        }
+    constructor() {
+        this.carregarPacientes();
     }
 
-    private salvarPacientes(pacientes: Paciente[]): void {
-        try {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(pacientes));
-        } catch (error) {
-            console.error('Erro ao salvar pacientes no localStorage:', error);
-        }
+    private carregarPacientes(): void {
+        collectionData(this.pacientesCollection, { idField: 'cpf_id' }).subscribe((pacientes: any[]) => {
+            if (pacientes.length === 0 && this.firstLoad) {
+                // Se o banco estiver vazio, inserimos os dados de inicialização (Seed Data)
+                this.firstLoad = false;
+                INITIAL_PACIENTES.forEach(p => {
+                    const cpfKey = p.cpf ? p.cpf.replace(/\D/g, '') : `paciente_${Date.now()}_${Math.random()}`;
+                    this.adicionarPacienteComID(cpfKey, p);
+                });
+            } else {
+                if (!this.firstLoad) {
+                    this.notificationService.setDot('Pacientes', true);
+                    this.notificationService.setDot('Meus Pacientes', true);
+                    this.notificationService.setDot('Meu Idoso', true);
+                }
+                this.firstLoad = false;
+                this.pacientesSubject.next(pacientes as Paciente[]);
+            }
+        });
     }
 
     getPacientes(): Observable<Paciente[]> {
         return this.pacientes$;
     }
 
+    private async adicionarPacienteComID(id: string, paciente: Paciente) {
+        const pacienteDoc = doc(this.firestore, `pacientes/${id}`);
+        await setDoc(pacienteDoc, paciente);
+    }
+
     adicionarPaciente(paciente: Paciente): void {
-        const pacientesAtuais = this.pacientesSubject.value;
-        const novosPacientes = [...pacientesAtuais, paciente];
-        this.pacientesSubject.next(novosPacientes);
-        this.salvarPacientes(novosPacientes);
+        const cpfKey = paciente.cpf ? paciente.cpf.replace(/\D/g, '') : `paciente_${Date.now()}`;
+        this.adicionarPacienteComID(cpfKey, paciente);
     }
 
     editarPaciente(index: number, paciente: Paciente): void {
         const pacientesAtuais = this.pacientesSubject.value;
         if (index >= 0 && index < pacientesAtuais.length) {
-            pacientesAtuais[index] = { ...paciente };
-            const novosPacientes = [...pacientesAtuais];
-            this.pacientesSubject.next(novosPacientes);
-            this.salvarPacientes(novosPacientes);
+            const cpfKey = paciente.cpf ? paciente.cpf.replace(/\D/g, '') : pacientesAtuais[index].cpf?.replace(/\D/g, '');
+            if (cpfKey) {
+                this.adicionarPacienteComID(cpfKey, paciente);
+            }
         }
     }
 
     excluirPaciente(index: number): void {
         const pacientesAtuais = this.pacientesSubject.value;
         if (index >= 0 && index < pacientesAtuais.length) {
-            pacientesAtuais.splice(index, 1);
-            const novosPacientes = [...pacientesAtuais];
-            this.pacientesSubject.next(novosPacientes);
-            this.salvarPacientes(novosPacientes);
+            const p = pacientesAtuais[index];
+            const cpfKey = p.cpf ? p.cpf.replace(/\D/g, '') : null;
+            if (cpfKey) {
+                const pacienteDoc = doc(this.firestore, `pacientes/${cpfKey}`);
+                deleteDoc(pacienteDoc);
+            }
         }
     }
 
@@ -111,26 +116,22 @@ export class PacienteService {
     }
 
     atualizarPacientePorCpf(cpf: string, novosDados: Partial<Paciente>): void {
-        const pacientes = this.pacientesSubject.value;
-        const index = pacientes.findIndex(p => p.cpf === cpf);
-        
-        if (index !== -1) {
-            const novosPacientes = [...pacientes];
-            novosPacientes[index] = { ...novosPacientes[index], ...novosDados };
+        const pacienteAtual = this.getPacienteByCpf(cpf);
+        if (pacienteAtual) {
+            const cpfKey = cpf.replace(/\D/g, '');
+            const pacienteAtualizado = { ...pacienteAtual, ...novosDados };
             
-            // Recalcular endereço completo se necessário
             if (novosDados.rua || novosDados.numero || novosDados.bairro || novosDados.cidade) {
-                const p = novosPacientes[index];
-                novosPacientes[index].endereco = `${p.rua}, ${p.numero} - ${p.bairro}, ${p.cidade} - ${p.estado}`;
+                pacienteAtualizado.endereco = `${pacienteAtualizado.rua}, ${pacienteAtualizado.numero} - ${pacienteAtualizado.bairro}, ${pacienteAtualizado.cidade} - ${pacienteAtualizado.estado}`;
             }
 
-            this.pacientesSubject.next(novosPacientes);
-            this.salvarPacientes(novosPacientes);
+            this.adicionarPacienteComID(cpfKey, pacienteAtualizado);
         }
     }
 
     limparDados(): void {
-        localStorage.removeItem(this.STORAGE_KEY);
+        // Caution! This isn't trivial with Firestore without a backend script, 
+        // so we'll just leave it empty or delete locally for the demo.
         this.pacientesSubject.next([]);
     }
 }

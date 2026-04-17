@@ -1,6 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsuarioService, Usuario } from '../../features/system/gestor/usuario.service';
+import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
 
 export interface DadosGestor {
   nome: string;
@@ -20,9 +21,7 @@ export class AuthService {
   perfil = this._perfil.asReadonly();
 
   private usuarioAtualLogin: string | null = null;
-
-  private senhaGestor = '123'; // Senha padrão inicial (Sincronizado com seed-data)
-
+  private senhaGestor = '123';
   private dadosGestor: DadosGestor = {
     nome: 'Administrador',
     email: 'admin@cuidado.com',
@@ -31,6 +30,8 @@ export class AuthService {
   };
 
   private usuarioService = inject(UsuarioService);
+  private firestore = inject(Firestore);
+  private configDocRef = doc(this.firestore, 'admin/gestorConfig');
 
   constructor(private router: Router) {
     if (sessionStorage.getItem('estaLogado') === 'true') {
@@ -39,28 +40,29 @@ export class AuthService {
       this.usuarioAtualLogin = sessionStorage.getItem('usuarioAtualLogin');
     }
 
-    // Carrega senha personalizada se existir
-    const senhaSalva = localStorage.getItem('senhaGestor');
-    if (senhaSalva) {
-      this.senhaGestor = senhaSalva;
-    }
-
-    // Carrega dados do perfil se existirem
-    const dadosSalvos = localStorage.getItem('dadosGestor');
-    if (dadosSalvos) {
-      this.dadosGestor = JSON.parse(dadosSalvos);
-    }
+    docData(this.configDocRef).subscribe((data: any) => {
+      if (data) {
+        if (data.senhaGestor) this.senhaGestor = data.senhaGestor;
+        if (data.dadosGestor) this.dadosGestor = data.dadosGestor;
+      } else {
+        this.salvarConfigGestorContext();
+      }
+    });
   }
 
+  private async salvarConfigGestorContext() {
+    await setDoc(this.configDocRef, {
+      senhaGestor: this.senhaGestor,
+      dadosGestor: this.dadosGestor
+    });
+  }
 
   entrar(usuario: string, senha: string): boolean {
-    // Login Gestor
     if (usuario === 'gestor' && senha === this.senhaGestor) {
       this.realizarLogin('gestor', 'gestor', '/gestor');
       return true;
     }
 
-    // Login Usuários
     const usuarios = this.usuarioService.getUsuariosAtuais();
     const user = usuarios.find(u => u.login === usuario && u.password === senha);
 
@@ -106,10 +108,8 @@ export class AuthService {
 
   precisaTrocarSenha(): boolean {
     if (this.usuarioAtualLogin === 'gestor') {
-      // Se quiser forçar pro gestor também se a senha for 123456
-      return false; // Gestor update logic is separate currently
+      return false;
     }
-
     const usuarios = this.usuarioService.getUsuariosAtuais();
     const user = usuarios.find(u => u.login === this.usuarioAtualLogin);
     return user?.password === '123456';
@@ -124,7 +124,7 @@ export class AuthService {
 
   atualizarSenhaGestor(novaSenha: string): void {
     this.senhaGestor = novaSenha;
-    localStorage.setItem('senhaGestor', novaSenha);
+    this.salvarConfigGestorContext();
   }
 
   getUsuarioAtualLogin(): string | null {
@@ -137,7 +137,7 @@ export class AuthService {
 
   atualizarDadosGestor(novosDados: DadosGestor): void {
     this.dadosGestor = { ...this.dadosGestor, ...novosDados };
-    localStorage.setItem('dadosGestor', JSON.stringify(this.dadosGestor));
+    this.salvarConfigGestorContext();
   }
 
   getUsuarioLogadoCompleto(): Usuario | null {

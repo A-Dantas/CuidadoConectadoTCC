@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { INITIAL_USUARIOS } from '../../../core/data/seed-data';
+import { Firestore, collection, collectionData, doc, setDoc, deleteDoc } from '@angular/fire/firestore';
+import { NotificationService } from '../../../core/services/notification.service';
 
 export interface Usuario {
     userName: string;
@@ -12,8 +14,6 @@ export interface Usuario {
     cidade: string;
     estado: string;
     endereco: string;
-
-    // Campos específicos de cuidador
     sobrenome?: string;
     dataNascimento?: string;
     idade?: number;
@@ -22,64 +22,63 @@ export interface Usuario {
     whatsapp?: string;
     tempoExperiencia?: string;
     experienciaComorbidades?: string;
-    tipoUsuario?: string; // Tipo de usuário: cuidador, medico, familiar
-    experienciaComorbidadesList?: string[]; // Lista de comorbidades
+    tipoUsuario?: string; 
+    experienciaComorbidadesList?: string[];
     login?: string;
     password?: string;
     cpfPacienteResponsavel?: string;
-
-    // Novos campos para currículo e ativação
     status?: 'pending' | 'active';
-    curriculoPdf?: string; // Base64 do PDF
+    curriculoPdf?: string; 
     isCurriculo?: boolean;
     fotoPerfil?: string;
 }
-
 
 @Injectable({
     providedIn: 'root'
 })
 export class UsuarioService {
-    private readonly STORAGE_KEY = 'usuarios_data';
-    private usuariosSubject = new BehaviorSubject<Usuario[]>(this.carregarUsuarios());
+    private usuariosSubject = new BehaviorSubject<Usuario[]>([]);
     public usuarios$: Observable<Usuario[]> = this.usuariosSubject.asObservable();
+    private firestore = inject(Firestore);
+    private usuariosCollection = collection(this.firestore, 'usuarios');
+    private firstLoad = true;
+    private notificationService = inject(NotificationService);
 
-    constructor() { }
-
-    private carregarUsuarios(): Usuario[] {
-        try {
-            const data = localStorage.getItem(this.STORAGE_KEY);
-            let usuarios: Usuario[] = [];
-
-            if (data) {
-                usuarios = JSON.parse(data);
-
-                // Forçar reset para os novos usuários solicitados pelo usuário
-                const nomesSeed = INITIAL_USUARIOS.map(u => u.userName);
-                const todosNomesMatch = INITIAL_USUARIOS.every(u => usuarios.some(existente => existente.userName === u.userName));
-
-                if (!todosNomesMatch || usuarios.length > INITIAL_USUARIOS.length + 5) {
-                    console.log('Resetando banco de dados de usuários para novos padrões...');
-                    usuarios = [...INITIAL_USUARIOS];
-                    this.salvarUsuarios(usuarios);
-                }
-            } else {
-                usuarios = [...INITIAL_USUARIOS];
-                this.salvarUsuarios(usuarios);
-            }
-            return usuarios;
-        } catch (error) {
-            console.error('Erro ao carregar usuários do localStorage:', error);
-            return [];
-        }
+    constructor() { 
+        this.carregarUsuarios();
     }
 
-    private salvarUsuarios(usuarios: Usuario[]): void {
-        try {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(usuarios));
-        } catch (error) {
-            console.error('Erro ao salvar usuários no localStorage:', error);
+    private carregarUsuarios(): void {
+        collectionData(this.usuariosCollection, { idField: 'firestore_id' }).subscribe((usuarios: any[]) => {
+            if (usuarios.length === 0 && this.firstLoad) {
+                this.firstLoad = false;
+                INITIAL_USUARIOS.forEach(u => {
+                    const loginRef = u.login || `user_${Date.now()}_${Math.random()}`;
+                    this.salvarUsuarioFirestore(loginRef, u);
+                });
+            } else {
+                if (!this.firstLoad) {
+                    this.notificationService.setDot('Usuários', true);
+                    this.notificationService.setDot('Currículos', true); 
+                }
+                this.firstLoad = false;
+                this.usuariosSubject.next(usuarios as Usuario[]);
+            }
+        });
+    }
+
+    private async salvarUsuarioFirestore(id: string, usuario: Usuario) {
+        if (!usuario.login) {
+             const primeiroNome = usuario.userName?.trim().split(' ')[0].toLowerCase() || 'user';
+             const telefoneNumeros = usuario.telefone ? usuario.telefone.replace(/\D/g, '') : '';
+             const ultimosQuatro = telefoneNumeros.slice(-4);
+             const sufixo = ultimosQuatro.length === 4 ? ultimosQuatro : '0000';
+             usuario.login = `${primeiroNome}${sufixo}`;
         }
+        
+        const docId = usuario.login || id;
+        const usuarioDoc = doc(this.firestore, `usuarios/${docId}`);
+        await setDoc(usuarioDoc, usuario);
     }
 
     getUsuarios(): Observable<Usuario[]> {
@@ -91,41 +90,28 @@ export class UsuarioService {
     }
 
     adicionarUsuario(usuario: Usuario): void {
-        const usuariosAtuais = this.usuariosSubject.value;
-
-        // Se não vier com status, assume active (cadastro manual pelo gestor)
         if (!usuario.status) {
             usuario.status = 'active';
         }
-
-        // Se o status for active, gera as credenciais
         if (usuario.status === 'active' && !usuario.login) {
-            let login = '';
-            if (usuario.userName) {
-                const primeiroNome = usuario.userName.trim().split(' ')[0].toLowerCase();
-                const telefoneNumeros = usuario.telefone ? usuario.telefone.replace(/\D/g, '') : '';
-                const ultimosQuatro = telefoneNumeros.slice(-4);
-                const sufixo = ultimosQuatro.length === 4 ? ultimosQuatro : '0000';
-                login = `${primeiroNome}${sufixo}`;
-            }
-            usuario.login = login;
+            const primeiroNome = usuario.userName.trim().split(' ')[0].toLowerCase();
+            const telefoneNumeros = usuario.telefone ? usuario.telefone.replace(/\D/g, '') : '';
+            const ultimosQuatro = telefoneNumeros.slice(-4);
+            const sufixo = ultimosQuatro.length === 4 ? ultimosQuatro : '0000';
+            usuario.login = `${primeiroNome}${sufixo}`;
             usuario.password = '123456';
         }
 
-        const novosUsuarios = [...usuariosAtuais, usuario];
-        this.usuariosSubject.next(novosUsuarios);
-        this.salvarUsuarios(novosUsuarios);
+        const fallbackId = `user_${Date.now()}`;
+        this.salvarUsuarioFirestore(fallbackId, usuario);
     }
 
     ativarUsuario(index: number): void {
         const usuariosAtuais = this.usuariosSubject.value;
         if (index >= 0 && index < usuariosAtuais.length) {
-            const nuevosUsuarios = [...usuariosAtuais];
-            const usuario = { ...nuevosUsuarios[index] };
-            
+            const usuario = { ...usuariosAtuais[index] };
             usuario.status = 'active';
             
-            // Gerar login e senha se ainda não tiver
             if (!usuario.login) {
                 const primeiroNome = usuario.userName.trim().split(' ')[0].toLowerCase();
                 const telefoneNumeros = usuario.telefone ? usuario.telefone.replace(/\D/g, '') : '';
@@ -135,25 +121,18 @@ export class UsuarioService {
                 usuario.password = '123456';
             }
 
-            nuevosUsuarios[index] = usuario;
-            this.usuariosSubject.next(nuevosUsuarios);
-            this.salvarUsuarios(nuevosUsuarios);
+            const docId = usuario.login || `temp_${index}`;
+            this.salvarUsuarioFirestore(docId, usuario);
         }
     }
 
     atualizarSenha(login: string, novaSenha: string): boolean {
         const usuariosAtuais = this.usuariosSubject.value;
         const index = usuariosAtuais.findIndex(u => u.login === login);
-
         if (index !== -1) {
             const usuario = { ...usuariosAtuais[index] };
             usuario.password = novaSenha;
-
-            const novosUsuarios = [...usuariosAtuais];
-            novosUsuarios[index] = usuario;
-
-            this.usuariosSubject.next(novosUsuarios);
-            this.salvarUsuarios(novosUsuarios);
+            this.salvarUsuarioFirestore(usuario.login!, usuario);
             return true;
         }
         return false;
@@ -162,37 +141,32 @@ export class UsuarioService {
     atualizarUsuario(index: number, usuarioAtualizado: Usuario): void {
         const usuariosAtuais = this.usuariosSubject.value;
         if (index >= 0 && index < usuariosAtuais.length) {
-            const novosUsuarios = [...usuariosAtuais];
-            // Preservar login e senha se não vierem no atualizado
             const credenciaisAntigas = {
                 login: usuariosAtuais[index].login,
                 password: usuariosAtuais[index].password
             };
-
-            novosUsuarios[index] = { ...credenciaisAntigas, ...usuarioAtualizado };
-            this.usuariosSubject.next(novosUsuarios);
-            this.salvarUsuarios(novosUsuarios);
+            const merged = { ...credenciaisAntigas, ...usuarioAtualizado };
+            this.salvarUsuarioFirestore(merged.login!, merged);
         }
     }
 
     atualizarPerfilPorLogin(login: string, novosDados: Partial<Usuario>): void {
         const usuarios = this.usuariosSubject.value;
         const index = usuarios.findIndex(u => u.login === login);
-        
         if (index !== -1) {
-            const novosUsuarios = [...usuarios];
-            novosUsuarios[index] = { ...novosUsuarios[index], ...novosDados };
-            this.usuariosSubject.next(novosUsuarios);
-            this.salvarUsuarios(novosUsuarios);
+            const merged = { ...usuarios[index], ...novosDados };
+            this.salvarUsuarioFirestore(login, merged);
         }
     }
 
     removerUsuario(index: number): void {
         const usuariosAtuais = this.usuariosSubject.value;
         if (index >= 0 && index < usuariosAtuais.length) {
-            const novosUsuarios = usuariosAtuais.filter((_, i) => i !== index);
-            this.usuariosSubject.next(novosUsuarios);
-            this.salvarUsuarios(novosUsuarios);
+             const userToDelete = usuariosAtuais[index];
+             if (userToDelete.login) {
+                 const usuarioDoc = doc(this.firestore, `usuarios/${userToDelete.login}`);
+                 deleteDoc(usuarioDoc);
+             }
         }
     }
 
@@ -201,7 +175,6 @@ export class UsuarioService {
     }
 
     limparDados(): void {
-        localStorage.removeItem(this.STORAGE_KEY);
         this.usuariosSubject.next([]);
     }
 }

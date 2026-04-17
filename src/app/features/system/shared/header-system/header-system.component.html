@@ -12,7 +12,8 @@
         <div class="container_links">
             <div class="botao_mensagem">
                 <button class="botao" (click)="toggleChat()">
-                    <div class="container_icone">
+                    <div class="container_icone" style="position: relative;">
+                        <span class="bolinha-vermelha" *ngIf="hasUnreadMessages"></span>
                         <img src="" alt="">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 25" width="20" height="20"
                             fill="rgba(62,153,114,1)">

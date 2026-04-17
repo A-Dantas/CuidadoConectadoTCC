@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
 
 export interface MensagemGeral {
     texto: string;
@@ -24,33 +25,43 @@ export interface MapaMensagensDiretas {
     providedIn: 'root'
 })
 export class ChatService {
-    private readonly STORAGE_KEY_GERAL = 'chat_mensagens_gerais';
-    private readonly STORAGE_KEY_DIRETAS = 'chat_mensagens_diretas';
-
-    private mensagensGeraisSubject = new BehaviorSubject<MensagemGeral[]>(this.carregarMensagensGerais());
+    private mensagensGeraisSubject = new BehaviorSubject<MensagemGeral[]>([]);
     public mensagensGerais$: Observable<MensagemGeral[]> = this.mensagensGeraisSubject.asObservable();
 
-    private mensagensDiretasSubject = new BehaviorSubject<MapaMensagensDiretas>(this.carregarMensagensDiretas());
+    private mensagensDiretasSubject = new BehaviorSubject<MapaMensagensDiretas>({});
     public mensagensDiretas$: Observable<MapaMensagensDiretas> = this.mensagensDiretasSubject.asObservable();
 
-    constructor() { }
+    private firestore = inject(Firestore);
+    private chatGeralDocRef = doc(this.firestore, 'chats/geral');
+    private chatDiretasDocRef = doc(this.firestore, 'chats/diretas');
 
-    // --- Mensagens Gerais ---
+    constructor() { 
+        this.carregarMensagens();
+    }
 
-    private carregarMensagensGerais(): MensagemGeral[] {
-        const stored = sessionStorage.getItem(this.STORAGE_KEY_GERAL);
-        return stored ? JSON.parse(stored) : [];
+    private carregarMensagens() {
+        docData(this.chatGeralDocRef).subscribe((data: any) => {
+            if (data && data.messages) {
+                this.mensagensGeraisSubject.next(data.messages);
+            }
+        });
+
+        docData(this.chatDiretasDocRef).subscribe((data: any) => {
+            if (data && data.mapa) {
+                this.mensagensDiretasSubject.next(data.mapa);
+            }
+        });
     }
 
     getMensagensGerais(): MensagemGeral[] {
         return this.mensagensGeraisSubject.value;
     }
 
-    adicionarMensagemGeral(mensagem: MensagemGeral): void {
+    async adicionarMensagemGeral(mensagem: MensagemGeral): Promise<void> {
         const mensagensAtuais = this.mensagensGeraisSubject.value;
         const novasMensagens = [...mensagensAtuais, mensagem];
         this.mensagensGeraisSubject.next(novasMensagens);
-        sessionStorage.setItem(this.STORAGE_KEY_GERAL, JSON.stringify(novasMensagens));
+        await setDoc(this.chatGeralDocRef, { messages: novasMensagens });
     }
 
     getUltimasMensagens(quantidade: number = 3): MensagemGeral[] {
@@ -58,18 +69,11 @@ export class ChatService {
         return mensagens.slice(-quantidade);
     }
 
-    // --- Mensagens Diretas ---
-
-    private carregarMensagensDiretas(): MapaMensagensDiretas {
-        const stored = sessionStorage.getItem(this.STORAGE_KEY_DIRETAS);
-        return stored ? JSON.parse(stored) : {};
-    }
-
     getMensagensDiretas(usuarioId: string): MensagemDireta[] {
         return this.mensagensDiretasSubject.value[usuarioId] || [];
     }
 
-    adicionarMensagemDireta(usuarioId: string, mensagem: MensagemDireta): void {
+    async adicionarMensagemDireta(usuarioId: string, mensagem: MensagemDireta): Promise<void> {
         const mapaAtual = this.mensagensDiretasSubject.value;
         const mensagensUsuario = mapaAtual[usuarioId] || [];
 
@@ -79,10 +83,10 @@ export class ChatService {
         };
 
         this.mensagensDiretasSubject.next(novoMapa);
-        sessionStorage.setItem(this.STORAGE_KEY_DIRETAS, JSON.stringify(novoMapa));
+        await setDoc(this.chatDiretasDocRef, { mapa: novoMapa });
     }
 
-    marcarComoLidas(usuarioId: string): void {
+    async marcarComoLidas(usuarioId: string): Promise<void> {
         const mapaAtual = this.mensagensDiretasSubject.value;
         if (!mapaAtual[usuarioId]) return;
 
@@ -94,6 +98,6 @@ export class ChatService {
         };
 
         this.mensagensDiretasSubject.next(novoMapa);
-        sessionStorage.setItem(this.STORAGE_KEY_DIRETAS, JSON.stringify(novoMapa));
+        await setDoc(this.chatDiretasDocRef, { mapa: novoMapa });
     }
 }

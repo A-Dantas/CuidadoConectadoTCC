@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, inject, OnInit, OnDestroy } from '@ang
 import { CommonModule } from '@angular/common';
 import { SidebarService } from '../services/sidebar.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,6 +19,7 @@ export class MenuLateralSystemComponent implements OnInit, OnDestroy {
   
   private sidebarService = inject(SidebarService);
   private authService = inject(AuthService);
+  public notificationService = inject(NotificationService);
   private sub?: Subscription;
 
   @Output() menuSelecionadoChange = new EventEmitter<number>();
@@ -41,6 +43,13 @@ export class MenuLateralSystemComponent implements OnInit, OnDestroy {
     if (window.innerWidth <= 768) {
       this.sidebarService.setSidebarState(false);
     }
+  }
+
+  hasNotification(menuId: string): boolean {
+    // Acessa o behavior subject síncrono para a UI de forma segura
+    let notifications: any = {};
+    this.notificationService.menuDots$.subscribe(n => notifications = n).unsubscribe();
+    return !!notifications[menuId];
   }
 
   closeSidebar(): void {

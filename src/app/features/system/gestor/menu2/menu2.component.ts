@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PacienteService, Paciente } from '../paciente.service';
 import { UsuarioService, Usuario } from '../usuario.service';
 import { Subscription } from 'rxjs';
+import { ScheduleService } from '../../../../core/services/schedule.service';
 
 @Component({
   selector: 'app-menu2',
@@ -92,7 +93,8 @@ export class Menu2Component implements OnInit, OnDestroy {
 
   constructor(
     private pacienteService: PacienteService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private scheduleService: ScheduleService
   ) { }
 
   ngOnInit(): void {
@@ -108,18 +110,15 @@ export class Menu2Component implements OnInit, OnDestroy {
       })
     );
 
-    this.loadCalendarsData();
+    this.subscription.add(
+      this.scheduleService.getSchedules().subscribe((schedules: any) => {
+         this.calendarsData = schedules;
+      })
+    );
   }
 
   loadCalendarsData(): void {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      if (data) {
-        this.calendarsData = JSON.parse(data);
-      }
-    } catch (error) {
-      console.error('Error loading calendars data:', error);
-    }
+    // Deprecado. Sincronização via ScheduleService Firestore.
   }
 
   ngOnDestroy(): void {

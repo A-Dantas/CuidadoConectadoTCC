@@ -211,6 +211,15 @@ export class HeaderSystemComponent implements OnInit {
     return mensagens.filter(msg => !msg.lida && msg.autor !== 'Você').length;
   }
 
+  get hasUnreadMessages(): boolean {
+    // Calculamos o total de mensagens não lidas
+    let totalUnread = 0;
+    for (const userId in this.mapaMensagensDiretas) {
+      totalUnread += this.getNumeroMensagensNaoLidas(userId);
+    }
+    return totalUnread > 0;
+  }
+
   get podeEnviarMensagem(): boolean {
     if (this.abaAtiva === 'geral') {
       return this.authService.perfil() === 'gestor';

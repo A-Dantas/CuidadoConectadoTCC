@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { INITIAL_SCHEDULES } from '../data/seed-data';
 import { EvolutionService } from './evolution.service';
+import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
+import { NotificationService } from './notification.service';
 
 export interface ShiftEntry {
   day: number;
@@ -13,27 +15,35 @@ export interface ShiftEntry {
   providedIn: 'root'
 })
 export class ScheduleService {
-  private readonly STORAGE_KEY = 'calendars_data';
   private calendarsData: { [cuidadorName: string]: any[] } = {};
   private schedulesSubject = new BehaviorSubject<{ [cuidadorName: string]: any[] }>({});
+  private firestore = inject(Firestore);
+  private schedulesDocRef = doc(this.firestore, 'schedules/calendarsData');
+  private isSeeded = false;
+  private notificationService = inject(NotificationService);
 
   constructor(private evolutionService: EvolutionService) {
     this.loadCalendarsData();
   }
 
   private loadCalendarsData(): void {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      if (data) {
-        this.calendarsData = JSON.parse(data);
+    docData(this.schedulesDocRef).subscribe((data: any) => {
+      if (data && Object.keys(data).length > 0) {
+        // Se já tínhamos dados previamente carregados, é uma notificação em tempo real
+        if (Object.keys(this.calendarsData).length > 0) {
+           this.notificationService.setDot('Agendar', true);
+           this.notificationService.setDot('Meus Plantões', true);
+           this.notificationService.setDot('Agenda', true);
+        }
+        this.calendarsData = data;
         this.schedulesSubject.next(this.calendarsData);
       } else {
-        // Apply seed data if no records exist
-        this.initializeWithSeedData();
+        if (!this.isSeeded) {
+          this.isSeeded = true;
+          this.initializeWithSeedData();
+        }
       }
-    } catch (error) {
-      console.error('Error loading calendars data:', error);
-    }
+    });
   }
 
   private initializeWithSeedData(): void {
@@ -98,18 +108,15 @@ export class ScheduleService {
     return this.schedulesSubject.value[cuidadorName] || [];
   }
 
-  saveCalendarsData(data: { [cuidadorName: string]: any[] }): void {
+  async saveCalendarsData(data: { [cuidadorName: string]: any[] }): Promise<void> {
     this.calendarsData = data;
     this.schedulesSubject.next(data);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+    await setDoc(this.schedulesDocRef, data);
   }
 
   resetSchedules(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
     this.calendarsData = {};
     this.initializeWithSeedData();
-    // After re-initializing, manually trigger subjects again to be sure
-    this.schedulesSubject.next(this.calendarsData);
   }
 
   updateAppointmentStatus(cuidadorName: string, day: number, patientName: string, status: string): void {
@@ -121,16 +128,13 @@ export class ScheduleService {
       const index = dayObj.selectedPatients.indexOf(patientName);
       if (index !== -1) {
         if (!dayObj.selectedStatuses) dayObj.selectedStatuses = [];
-        if (!dayObj.selectedArrivedAt) dayObj.selectedArrivedAt = []; // Store arrival timestamps
+        if (!dayObj.selectedArrivedAt) dayObj.selectedArrivedAt = []; 
 
         dayObj.selectedStatuses[index] = status;
         
-        // Record timestamp specifically if they just arrived and we don't have one
         if (status === 'arrived' && !dayObj.selectedArrivedAt[index]) {
-            // Se for pra testar mais rápido na apresentação, você pode colocar "new Date().getTime() - (30 * 60000)" pra adiantar
             dayObj.selectedArrivedAt[index] = new Date().toISOString();
         } else if (status !== 'arrived' && status !== 'completed') {
-            // Reset if they cancel the arrival
             dayObj.selectedArrivedAt[index] = null;
         }
 

@@ -108,6 +108,26 @@ header {
     align-items: center;
 }
 
+.bolinha-vermelha {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 10px;
+    height: 10px;
+    background-color: #ef4444; 
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
 /* Chat Styles */
 .chat-overlay {
     position: fixed;

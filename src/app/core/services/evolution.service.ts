@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Firestore, collection, collectionData, doc, setDoc, deleteDoc } from '@angular/fire/firestore';
+import { NotificationService } from './notification.service';
 
 export interface EvolutionEntry {
   id?: string;
@@ -16,51 +18,46 @@ export interface EvolutionEntry {
   providedIn: 'root'
 })
 export class EvolutionService {
-  private readonly STORAGE_KEY = 'evolution_data';
-  private evolutionSubject = new BehaviorSubject<EvolutionEntry[]>(this.loadEvolutionData());
+  private evolutionSubject = new BehaviorSubject<EvolutionEntry[]>([]);
   public evolutions$: Observable<EvolutionEntry[]> = this.evolutionSubject.asObservable();
+  private firestore = inject(Firestore);
+  private evolutionCollection = collection(this.firestore, 'evolutions');
+  private firstLoad = true;
+  private notificationService = inject(NotificationService);
 
-  constructor() { }
-
-  private loadEvolutionData(): EvolutionEntry[] {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Error loading evolution data:', error);
-      return [];
-    }
+  constructor() {
+    this.carregarEvolutions();
   }
 
-  private saveEvolutionData(entries: EvolutionEntry[]): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(entries));
-    } catch (error) {
-      console.error('Error saving evolution data:', error);
-    }
+  private carregarEvolutions(): void {
+    collectionData(this.evolutionCollection, { idField: 'id' }).subscribe((entries: any[]) => {
+       if (!this.firstLoad) {
+           this.notificationService.setDot('Prontuários', true);
+           this.notificationService.setDot('Linha do Tempo', true);
+       }
+       this.firstLoad = false;
+       this.evolutionSubject.next(entries as EvolutionEntry[]);
+    });
   }
 
   getEvolutionsByPatient(patientCpf: string): EvolutionEntry[] {
     return this.evolutionSubject.value
       .filter(e => e.patientCpf === patientCpf)
       .sort((a, b) => {
-        // Sort by date and time descending
         const dateA = this.parseDateTime(a.date, a.time);
         const dateB = this.parseDateTime(b.date, b.time);
         return dateB.getTime() - dateA.getTime();
       });
   }
 
-  addEvolution(entry: EvolutionEntry): void {
-    const current = this.evolutionSubject.value;
-    const newEntry = { ...entry, id: Date.now().toString() };
-    const updated = [newEntry, ...current];
-    this.evolutionSubject.next(updated);
-    this.saveEvolutionData(updated);
+  async addEvolution(entry: EvolutionEntry): Promise<void> {
+    const id = Date.now().toString() + '_' + Math.floor(Math.random()*1000);
+    const newEntry = { ...entry, id };
+    const evolutionDoc = doc(this.firestore, `evolutions/${id}`);
+    await setDoc(evolutionDoc, newEntry);
   }
 
   resetEvolutions(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
     this.evolutionSubject.next([]);
   }
 
