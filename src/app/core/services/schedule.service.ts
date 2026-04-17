@@ -29,6 +29,14 @@ export class ScheduleService {
   private loadCalendarsData(): void {
     docData(this.schedulesDocRef).subscribe((data: any) => {
       if (data && Object.keys(data).length > 0) {
+        // Limpeza Programática do Kelvin se existir
+        if (data['Kelvin']) {
+          console.log('🧹 Removendo plantões do Kelvin do banco remoto...');
+          delete data['Kelvin'];
+          this.saveCalendarsData(data);
+          return; // Para evitar loops, o save vai triggar um novo reload
+        }
+
         // Se já tínhamos dados previamente carregados, é uma notificação em tempo real
         if (Object.keys(this.calendarsData).length > 0) {
            this.notificationService.setDot('Agendar', true);

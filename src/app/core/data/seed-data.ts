@@ -118,17 +118,4 @@ export const INITIAL_PACIENTES: Paciente[] = [
     }
 ];
 
-export const INITIAL_SCHEDULES = [
-    {
-        cuidador: 'Kelvin',
-        day: 10,
-        patient: 'João da Silva',
-        shift: '24H_7H'
-    },
-    {
-        cuidador: 'Kelvin',
-        day: 12,
-        patient: 'João da Silva',
-        shift: 'MT'
-    }
-];
+export const INITIAL_SCHEDULES = [];
