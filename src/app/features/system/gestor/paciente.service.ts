@@ -21,6 +21,7 @@ export interface Paciente {
     contatoFamiliar: string;
     observacoes?: string;
     foto?: string;
+    cpf_id?: string;
 }
 
 @Injectable({

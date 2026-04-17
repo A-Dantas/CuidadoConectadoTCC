@@ -32,6 +32,7 @@ export interface Usuario {
     isCurriculo?: boolean;
     fotoPerfil?: string;
     tipoChavePix?: string;
+    firestore_id?: string;
 }
 
 @Injectable({

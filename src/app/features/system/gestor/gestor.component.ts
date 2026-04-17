@@ -8,7 +8,7 @@ import { Menu4Component } from "./menu4/menu4.component";
 import { Menu5Component } from "./menu5/menu5.component";
 import { UsuarioService } from './usuario.service';
 import { PacienteService } from './paciente.service';
-import { ScheduleService } from '../../../../core/services/schedule.service';
+import { ScheduleService } from '../../../core/services/schedule.service';
 
 @Component({
   selector: 'app-gestor',
