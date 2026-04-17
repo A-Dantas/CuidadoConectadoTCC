@@ -1,0 +1,37 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras para a coleção de usuários
+    match /usuarios/{userId} {
+      // Permite leitura para qualquer usuário (Necessário para o login manual sem Auth)
+      allow read: if true;
+      
+      // Permite criação/escrita (Necessário para cadastro externo)
+      // Idealmente aqui verificaríamos campos obrigatórios, mas como não há Auth,
+      // a segurança é limitada a travas de estrutura básicas.
+      allow create, update: if request.resource.data.userName != null;
+      
+      // Proíbe exclusão por qualquer um via front-end
+      allow delete: if false;
+    }
+    
+    // Regras para a coleção de pacientes
+    match /pacientes/{pacienteId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.cpf != null;
+      allow delete: if false;
+    }
+    
+    // Regras para a coleção de agendamentos
+    match /schedules/{document=**} {
+      allow read, write: if true;
+    }
+
+    // Regras para a coleção de evoluções
+    match /evolutions/{evolutionId} {
+      allow read, write: if true;
+    }
+  }
+}

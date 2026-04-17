@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Permite leitura e escrita pública (Sendo um TCC sem Auth,
+      // essa é a forma de garantir funcionalidade, embora não seja o ideal 
+      // para produção real).
+      allow read, write: if true;
+    }
+  }
+}
