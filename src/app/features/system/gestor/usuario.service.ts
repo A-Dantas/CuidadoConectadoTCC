@@ -58,21 +58,26 @@ export class UsuarioService {
     }
 
     private carregarUsuarios(): void {
-        collectionData(this.usuariosCollection, { idField: 'firestore_id' }).subscribe((usuarios: any[]) => {
-            console.log('🔄 Sincronização Firestore (Usuários):', usuarios.length, 'itens');
-            if (usuarios.length === 0 && this.firstLoad) {
+        collectionData(this.usuariosCollection, { idField: 'firestore_id' }).subscribe({
+            next: (usuarios: any[]) => {
+                console.log('🔄 Firestore Sync (Usuários):', usuarios.length, 'registros recebidos.');
+                if (usuarios.length === 0 && this.firstLoad) {
                 this.firstLoad = false;
                 INITIAL_USUARIOS.forEach(u => {
                     const loginRef = u.login || `user_${Date.now()}_${Math.random()}`;
-                    this.salvarUsuarioFirestore(loginRef, u);
-                });
-            } else {
-                if (!this.firstLoad) {
-                    this.notificationService.setDot('Usuários', true);
-                    this.notificationService.setDot('Currículos', true); 
+                        this.salvarUsuarioFirestore(loginRef, u);
+                    });
+                } else {
+                    if (!this.firstLoad) {
+                        this.notificationService.setDot('Usuários', true);
+                        this.notificationService.setDot('Currículos', true); 
+                    }
+                    this.firstLoad = false;
+                    this.usuariosSubject.next(usuarios as Usuario[]);
                 }
-                this.firstLoad = false;
-                this.usuariosSubject.next(usuarios as Usuario[]);
+            },
+            error: (err) => {
+                console.error('❌ Erro na subscrição do Firestore (Usuários):', err);
             }
         });
     }
@@ -92,12 +97,14 @@ export class UsuarioService {
         // Prio 1: login normalizado | Prio 2: ID sugerido normalizado | Prio 3: id randômico
         const docId = cleanUsuario.login ? this.normalizarTexto(cleanUsuario.login) : this.normalizarTexto(id);
 
+        console.log(`💾 Tentando salvar usuário no Firestore. ID: ${docId}`, cleanUsuario);
+
         const usuarioDoc = doc(this.firestore, `usuarios/${docId}`);
         try {
             await setDoc(usuarioDoc, cleanUsuario);
-            console.log(`Usuário ${docId} salvo com sucesso no Firestore.`);
+            console.log(`✅ Usuário ${docId} salvo com sucesso no Firestore.`);
         } catch (error) {
-            console.error(`Erro ao salvar usuário ${docId} no Firestore:`, error);
+            console.error(`❌ Erro ao salvar usuário ${docId} no Firestore:`, error);
         }
     }
 

@@ -519,6 +519,13 @@ export class Menu1Component implements OnInit, OnDestroy {
       this.novoCuidador.experienciaComorbidades = comorbidadesValidas.join(', ');
       this.novoCuidador.experienciaComorbidadesList = comorbidadesValidas; // Salvar array também
 
+      // Marcar como Cuidador e Currículo Pendente para sincronia global
+      this.novoCuidador.role = 'Caregiver';
+      this.novoCuidador.isCurriculo = true;
+      this.novoCuidador.status = 'pending';
+
+      console.log('📝 Cadastro Rápido de Cuidador:', this.novoCuidador);
+
       // Adicionar usuário
       this.usuarioService.adicionarUsuario({ ...this.novoCuidador });
 
@@ -990,37 +997,37 @@ export class Menu1Component implements OnInit, OnDestroy {
     if (!this.novoUsuario.email?.trim()) this.errosUsuario.email = true;
 
     if (this.novoUsuario.tipoUsuario === 'cuidador') {
-      if (!this.novoUsuario.dataNascimento) this.errosUsuario.dataNascimento = true;
-      if (!this.novoUsuario.telefone?.trim()) this.errosUsuario.telefone = true;
-      if (!this.novoUsuario.whatsapp?.trim()) this.errosUsuario.whatsapp = true;
-      if (!this.novoUsuario.rua?.trim()) this.errosUsuario.rua = true;
-      if (!this.novoUsuario.numero?.trim()) this.errosUsuario.numero = true;
-      if (!this.novoUsuario.bairro?.trim()) this.errosUsuario.bairro = true;
-      if (!this.novoUsuario.cidade?.trim()) this.errosUsuario.cidade = true;
-      if (!this.novoUsuario.estado?.trim()) this.errosUsuario.estado = true;
-      if (!this.novoUsuario.tempoExperiencia?.trim()) this.errosUsuario.tempoExperiencia = true;
-      if (!this.novoUsuario.chavePix?.trim()) this.errosUsuario.chavePix = true;
+      if (!this.novoUsuario.dataNascimento) (this.errosUsuario as any).dataNascimento = true;
+      if (!this.novoUsuario.telefone?.trim()) (this.errosUsuario as any).telefone = true;
+      if (!this.novoUsuario.whatsapp?.trim()) (this.errosUsuario as any).whatsapp = true;
+      if (!this.novoUsuario.rua?.trim()) (this.errosUsuario as any).rua = true;
+      if (!this.novoUsuario.numero?.trim()) (this.errosUsuario as any).numero = true;
+      if (!this.novoUsuario.bairro?.trim()) (this.errosUsuario as any).bairro = true;
+      if (!this.novoUsuario.cidade?.trim()) (this.errosUsuario as any).cidade = true;
+      if (!this.novoUsuario.estado?.trim()) (this.errosUsuario as any).estado = true;
+      if (!this.novoUsuario.tempoExperiencia?.trim()) (this.errosUsuario as any).tempoExperiencia = true;
+      if (!this.novoUsuario.chavePix?.trim()) (this.errosUsuario as any).chavePix = true;
 
       // Validação formato PIX
       if (this.novoUsuario.chavePix) {
         const tipo = this.novoUsuario.tipoChavePix;
         const valor = this.novoUsuario.chavePix;
-        if (tipo === 'CPF' && valor.length < 14) this.errosUsuario.chavePix = true;
-        if (tipo === 'Telefone' && valor.length < 14) this.errosUsuario.chavePix = true;
-        if (tipo === 'Email' && !valor.includes('@')) this.errosUsuario.chavePix = true;
+        if (tipo === 'CPF' && valor.length < 14) (this.errosUsuario as any).chavePix = true;
+        if (tipo === 'Telefone' && valor.length < 14) (this.errosUsuario as any).chavePix = true;
+        if (tipo === 'Email' && !valor.includes('@')) (this.errosUsuario as any).chavePix = true;
       }
     } else if (this.novoUsuario.tipoUsuario === 'medico') {
-      if (!this.novoUsuario.whatsapp?.trim()) this.errosUsuario.whatsapp = true;
+      if (!this.novoUsuario.whatsapp?.trim()) (this.errosUsuario as any).whatsapp = true;
     } else if (this.novoUsuario.tipoUsuario === 'familiar') {
-      if (!this.novoUsuario.dataNascimento) this.errosUsuario.dataNascimento = true;
-      if (!this.novoUsuario.cpfPacienteResponsavel || this.novoUsuario.cpfPacienteResponsavel.length < 14) this.errosUsuario.cpfPacienteResponsavel = true;
-      if (!this.novoUsuario.telefone?.trim()) this.errosUsuario.telefone = true;
-      if (!this.novoUsuario.whatsapp?.trim()) this.errosUsuario.whatsapp = true;
-      if (!this.novoUsuario.rua?.trim()) this.errosUsuario.rua = true;
-      if (!this.novoUsuario.numero?.trim()) this.errosUsuario.numero = true;
-      if (!this.novoUsuario.bairro?.trim()) this.errosUsuario.bairro = true;
-      if (!this.novoUsuario.cidade?.trim()) this.errosUsuario.cidade = true;
-      if (!this.novoUsuario.estado?.trim()) this.errosUsuario.estado = true;
+      if (!this.novoUsuario.dataNascimento) (this.errosUsuario as any).dataNascimento = true;
+      if (!this.novoUsuario.cpfPacienteResponsavel || this.novoUsuario.cpfPacienteResponsavel.length < 14) (this.errosUsuario as any).cpfPacienteResponsavel = true;
+      if (!this.novoUsuario.telefone?.trim()) (this.errosUsuario as any).telefone = true;
+      if (!this.novoUsuario.whatsapp?.trim()) (this.errosUsuario as any).whatsapp = true;
+      if (!this.novoUsuario.rua?.trim()) (this.errosUsuario as any).rua = true;
+      if (!this.novoUsuario.numero?.trim()) (this.errosUsuario as any).numero = true;
+      if (!this.novoUsuario.bairro?.trim()) (this.errosUsuario as any).bairro = true;
+      if (!this.novoUsuario.cidade?.trim()) (this.errosUsuario as any).cidade = true;
+      if (!this.novoUsuario.estado?.trim()) (this.errosUsuario as any).estado = true;
     }
 
     if (Object.keys(this.errosUsuario).length > 0) return;
@@ -1056,13 +1063,17 @@ export class Menu1Component implements OnInit, OnDestroy {
         this.novoUsuario.experienciaComorbidadesList = comorbidadesValidas; // Salvar array também
       }
 
-      // Mapear tipoUsuario para role
+      // Mapear tipoUsuario para role e configurar status
       if (this.novoUsuario.tipoUsuario === 'cuidador') {
         this.novoUsuario.role = 'Caregiver';
+        this.novoUsuario.isCurriculo = true;
+        this.novoUsuario.status = 'pending';
       } else if (this.novoUsuario.tipoUsuario === 'medico') {
         this.novoUsuario.role = 'Doctor';
+        this.novoUsuario.status = 'active';
       } else if (this.novoUsuario.tipoUsuario === 'familiar') {
         this.novoUsuario.role = 'Family Member';
+        this.novoUsuario.status = 'active';
       }
 
       this.usuarioService.adicionarUsuario({ ...this.novoUsuario });

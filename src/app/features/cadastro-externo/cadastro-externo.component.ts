@@ -413,8 +413,10 @@ export class CadastroExternoComponent implements OnInit {
         this.novoUsuario.status = 'pending';
       } else if (this.tipoUsuario === 'medico') {
         this.novoUsuario.role = 'Doctor';
+        this.novoUsuario.status = 'active';
       } else if (this.tipoUsuario === 'familiar') {
         this.novoUsuario.role = 'Family Member';
+        this.novoUsuario.status = 'active';
       }
 
       this.usuarioService.adicionarUsuario({ ...this.novoUsuario });
