@@ -110,7 +110,7 @@ export class UsuarioService {
         });
     }
 
-    private async salvarUsuarioFirestore(id: string, usuario: Usuario) {
+    private async salvarUsuarioFirestore(id: string, usuario: Usuario): Promise<void> {
         if (!usuario.login) {
              const primeiroNome = this.normalizarTexto(usuario.userName?.trim().split(' ')[0] || 'user');
              const telefoneNumeros = usuario.telefone ? usuario.telefone.replace(/\D/g, '') : '';
@@ -125,7 +125,7 @@ export class UsuarioService {
         // Prio 1: login normalizado | Prio 2: ID sugerido normalizado | Prio 3: id randômico
         const docId = cleanUsuario.login ? this.normalizarTexto(cleanUsuario.login) : this.normalizarTexto(id);
 
-        console.log(`💾 Tentando salvar usuário no Firestore. ID: ${docId}`, cleanUsuario);
+        console.log(`💾 Salvando usuário no Firestore. ID: ${docId}`, cleanUsuario);
 
         const usuarioDoc = doc(this.firestore, `usuarios/${docId}`);
         try {
@@ -133,6 +133,7 @@ export class UsuarioService {
             console.log(`✅ Usuário ${docId} salvo com sucesso no Firestore.`);
         } catch (error) {
             console.error(`❌ Erro ao salvar usuário ${docId} no Firestore:`, error);
+            throw error; // Propagar erro para o chamador
         }
     }
 
@@ -168,7 +169,7 @@ export class UsuarioService {
         }, 5000);
     }
 
-    adicionarUsuario(usuario: Usuario): void {
+    adicionarUsuario(usuario: Usuario): Promise<void> {
         if (!usuario.status) {
             usuario.status = 'active';
         }
@@ -183,7 +184,7 @@ export class UsuarioService {
         }
 
         const fallbackId = `user_${Date.now()}`;
-        this.salvarUsuarioFirestore(fallbackId, usuario);
+        return this.salvarUsuarioFirestore(fallbackId, usuario);
     }
 
     ativarUsuario(index: number): void {

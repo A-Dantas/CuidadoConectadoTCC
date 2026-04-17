@@ -20,6 +20,7 @@ export class CadastroExternoComponent implements OnInit {
   animarGradient: boolean = false;
   fileName: string = '';
   pdfBase64: string = '';
+  carregando: boolean = false; // Novo estado de carregamento
 
   novoUsuario: Usuario = {
     userName: '',
@@ -143,8 +144,8 @@ export class CadastroExternoComponent implements OnInit {
         alert('Por favor, selecione apenas arquivos PDF.');
         return;
       }
-      if (file.size > 700 * 1024) {
-        alert('O currículo é muito grande. Para garantir o salvamento, o limite é de 700KB. Tente um arquivo mais leve.');
+      if (file.size > 500 * 1024) {
+        alert('O currículo é muito grande. Para garantir o salvamento no banco de dados, o limite é de 500KB. Tente um arquivo PDF mais leve ou compactado.');
         return;
       }
       this.fileName = file.name;
@@ -310,7 +311,7 @@ export class CadastroExternoComponent implements OnInit {
     }, 100);
   }
 
-  adicionarUsuario(): void {
+  async adicionarUsuario(): Promise<void> {
     this.errosUsuario = {};
     this.errosPaciente = {};
 
@@ -364,12 +365,10 @@ export class CadastroExternoComponent implements OnInit {
       if (tipo === 'CPF' && valor.length < 14) this.errosUsuario.chavePix = true;
       if (tipo === 'Telefone' && valor.length < 14) this.errosUsuario.chavePix = true;
       if (tipo === 'Email' && !valor.includes('@')) this.errosUsuario.chavePix = true;
-      // Chave Aleatória não tem um padrão fixo de tamanho, mas deve existir
     }
 
     if (Object.keys(this.errosUsuario).length > 0 || Object.keys(this.errosPaciente).length > 0) return;
 
-    // Verificar uma última vez se o CPF digitado não está sendo submetido existindo no banco
     if (this.cadastrarIdoso && this.tipoUsuario === 'familiar') {
       const pacientes = this.pacienteService.getPacientesValue();
       if (pacientes.some(p => p.cpf === this.novoPaciente.cpf)) {
@@ -407,41 +406,48 @@ export class CadastroExternoComponent implements OnInit {
         this.novoUsuario.experienciaComorbidadesList = comorbidadesValidas; 
       }
 
-      if (this.tipoUsuario === 'cuidador') {
-        this.novoUsuario.role = 'Caregiver';
-        this.novoUsuario.isCurriculo = true;
-        this.novoUsuario.status = 'pending';
-      } else if (this.tipoUsuario === 'medico') {
-        this.novoUsuario.role = 'Doctor';
-        this.novoUsuario.status = 'active';
-      } else if (this.tipoUsuario === 'familiar') {
-        this.novoUsuario.role = 'Family Member';
-        this.novoUsuario.status = 'active';
+      // Preparar payload explícito para evitar perda de estado
+      const payload: Usuario = {
+        ...this.novoUsuario,
+        role: this.tipoUsuario === 'cuidador' ? 'Caregiver' : (this.tipoUsuario === 'medico' ? 'Doctor' : 'Family Member'),
+        isCurriculo: this.tipoUsuario === 'cuidador',
+        status: this.tipoUsuario === 'cuidador' ? 'pending' : 'active'
+      };
+
+      this.carregando = true; // Iniciar carregamento
+
+      try {
+        console.log('📤 Enviando cadastro externo:', payload);
+        await this.usuarioService.adicionarUsuario(payload);
+
+        if (this.cadastrarIdoso && this.tipoUsuario === 'familiar') {
+          const enderecoCompletoPaciente = [
+            this.novoPaciente.rua,
+            this.novoPaciente.numero,
+            this.novoPaciente.bairro,
+            this.novoPaciente.cidade,
+            this.novoPaciente.estado
+          ].filter(part => part && part.trim()).join(', ');
+
+          this.novoPaciente.endereco = enderecoCompletoPaciente;
+          this.novoPaciente.contatoFamiliar = this.novoUsuario.userName;
+
+          const comorbidadesValidas = this.comorbidadesList
+            .map(c => c.trim())
+            .filter(c => c.length > 0);
+          this.novoPaciente.comorbidades = comorbidadesValidas.join(', ');
+
+          await this.pacienteService.adicionarPaciente({ ...this.novoPaciente });
+        }
+
+        this.cadastroConcluido = true;
+        console.log('✅ Cadastro externo concluído com sucesso.');
+      } catch (error) {
+        console.error('❌ Falha crítica no cadastro externo:', error);
+        alert('Ocorreu um erro ao salvar seu cadastro. Por favor, verifique sua conexão ou se o arquivo PDF é muito pesado (limite 500KB) e tente novamente.');
+      } finally {
+        this.carregando = false; // Finalizar carregamento
       }
-
-      this.usuarioService.adicionarUsuario({ ...this.novoUsuario });
-
-      if (this.cadastrarIdoso && this.tipoUsuario === 'familiar') {
-        const enderecoCompletoPaciente = [
-          this.novoPaciente.rua,
-          this.novoPaciente.numero,
-          this.novoPaciente.bairro,
-          this.novoPaciente.cidade,
-          this.novoPaciente.estado
-        ].filter(part => part && part.trim()).join(', ');
-
-        this.novoPaciente.endereco = enderecoCompletoPaciente;
-        this.novoPaciente.contatoFamiliar = this.novoUsuario.userName;
-
-        const comorbidadesValidas = this.comorbidadesList
-          .map(c => c.trim())
-          .filter(c => c.length > 0);
-        this.novoPaciente.comorbidades = comorbidadesValidas.join(', ');
-
-        this.pacienteService.adicionarPaciente({ ...this.novoPaciente });
-      }
-
-      this.cadastroConcluido = true;
     }
   }
 

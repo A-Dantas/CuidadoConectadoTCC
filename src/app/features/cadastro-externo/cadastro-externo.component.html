@@ -163,10 +163,10 @@
                     <input type="file" (change)="onFileSelected($event)" accept=".pdf" class="file-input" id="pdfUpload" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;">
                     <div class="file-custom-button" style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border: 2px dashed #14b8a6; border-radius: 8px; background-color: #f0fdfa; color: #115e59; font-weight: 500; transition: all 0.3s ease;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.4142 5H21C21.5523 5 22 5.44772 22 6V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H10.4142L12.4142 5ZM4 7V19H20V7H4ZM11 10V13H8V15H11V18H13V15H16V13H13V10H11Z"></path></svg>
-                        <span>{{ fileName || 'Clique para selecionar o PDF (Máx. 700KB)' }}</span>
+                        <span>{{ fileName || 'Clique para selecionar o PDF (Máx. 500KB)' }}</span>
                     </div>
                 </div>
-                @if (errosUsuario.curriculoPdf) { <span class="error-msg">O currículo é obrigatório e deve ter no máximo 700KB</span> }
+                @if (errosUsuario.curriculoPdf) { <span class="error-msg">O currículo é obrigatório e deve ter no máximo 500KB</span> }
             </div>
             
             <div class="form-group">
@@ -291,7 +291,16 @@
             }
 
             <div class="form-actions">
-                <button class="btn-submit" (click)="adicionarUsuario()">Concluir Cadastro</button>
+                <button class="btn-submit" (click)="adicionarUsuario()" [disabled]="carregando">
+                    <span *ngIf="!carregando">Concluir Cadastro</span>
+                    <span *ngIf="carregando" style="display: flex; align-items: center; gap: 8px;">
+                        <svg class="animate-spin" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25" style="opacity: 0.25;"></circle>
+                            <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+                        </svg>
+                        Processando...
+                    </span>
+                </button>
             </div>
         </div>
     </div>

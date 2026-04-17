@@ -29,8 +29,11 @@ export class Menu5Component implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription.add(
       this.usuarioService.getUsuarios().subscribe(usuarios => {
-        // Filtrar apenas usuários com status 'pending' que são currículos
-        this.curriculos = usuarios.filter(u => u.status === 'pending' && u.isCurriculo);
+        // Filtrar apenas usuários com status 'pending' que são currículos (robustamente)
+        this.curriculos = usuarios.filter(u => 
+          u.isCurriculo === true && 
+          (u.status?.toLowerCase().trim() === 'pending')
+        );
       })
     );
   }
