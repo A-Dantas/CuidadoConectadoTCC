@@ -38,7 +38,7 @@ export interface Usuario {
     providedIn: 'root'
 })
 export class UsuarioService {
-    private usuariosSubject = new BehaviorSubject<Usuario[]>([]);
+    private usuariosSubject = new BehaviorSubject<Usuario[]>(INITIAL_USUARIOS as Usuario[]);
     public usuarios$: Observable<Usuario[]> = this.usuariosSubject.asObservable();
     private firestore = inject(Firestore);
     private usuariosCollection = collection(this.firestore, 'usuarios');
@@ -60,25 +60,25 @@ export class UsuarioService {
     private carregarUsuarios(): void {
         collectionData(this.usuariosCollection, { idField: 'firestore_id' }).subscribe({
             next: (usuarios: any[]) => {
-                console.log('🔄 Firestore Sync (Usuários):', usuarios.length, 'registros recebidos.');
+                console.log('🔄 Firestore Sync (Usuários):', usuarios.length, 'registros recebidos do servidor.');
                 
                 if (usuarios.length === 0 && this.firstLoad) {
                     this.firstLoad = false;
-                    console.log('🌱 Inicializando banco com dados semente...');
-                    
-                    // Emitir imediatamente para a UI não ficar vazia
-                    this.usuariosSubject.next(INITIAL_USUARIOS as Usuario[]);
+                    console.log('🌱 Banco remoto vazio. Semeando dados iniciais no Firestore...');
+                    // Nota: O Subject já contém INITIAL_USUARIOS por conta da inicialização otimista.
 
                     INITIAL_USUARIOS.forEach(u => {
                         const loginRef = u.login || `user_${Date.now()}_${Math.random()}`;
                         this.salvarUsuarioFirestore(loginRef, u);
                     });
                 } else {
+                    // Notificar se for uma atualização real (mais itens que os que já tínhamos)
                     if (!this.firstLoad && usuarios.length > this.usuariosSubject.value.length) {
                         this.notificationService.setDot('Usuários', true);
                         this.notificationService.setDot('Currículos', true); 
                     }
                     this.firstLoad = false;
+                    // Atualiza o subject com os dados reais do Firestore (sobrescreve os dados otimistas se necessário)
                     this.usuariosSubject.next(usuarios as Usuario[]);
                 }
             },

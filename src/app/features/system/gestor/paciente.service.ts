@@ -27,7 +27,7 @@ export interface Paciente {
     providedIn: 'root'
 })
 export class PacienteService {
-    private pacientesSubject = new BehaviorSubject<Paciente[]>([]);
+    private pacientesSubject = new BehaviorSubject<Paciente[]>(INITIAL_PACIENTES as Paciente[]);
     public pacientes$: Observable<Paciente[]> = this.pacientesSubject.asObservable();
     private firestore = inject(Firestore);
     private pacientesCollection = collection(this.firestore, 'pacientes');
@@ -48,14 +48,12 @@ export class PacienteService {
 
     private carregarPacientes(): void {
         collectionData(this.pacientesCollection, { idField: 'cpf_id' }).subscribe((pacientes: any[]) => {
-            console.log('🔄 Sincronização Firestore (Pacientes):', pacientes.length, 'itens');
+            console.log('🔄 Sincronização Firestore (Pacientes):', pacientes.length, 'itens recebidos.');
             
             if (pacientes.length === 0 && this.firstLoad) {
                 this.firstLoad = false;
-                console.log('🌱 Inicializando pacientes (Seed Data)...');
-                
-                // Emitir imediatamente para a UI
-                this.pacientesSubject.next(INITIAL_PACIENTES as Paciente[]);
+                console.log('🌱 Banco remoto vazio. Semeando pacientes iniciais...');
+                // Nota: O Subject já contém INITIAL_PACIENTES por conta da inicialização otimista.
 
                 INITIAL_PACIENTES.forEach(p => {
                     const cpfKey = p.cpf ? p.cpf.replace(/\D/g, '') : `paciente_${Date.now()}_${Math.random()}`;
