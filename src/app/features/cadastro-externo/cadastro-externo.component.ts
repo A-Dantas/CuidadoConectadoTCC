@@ -76,7 +76,7 @@ export class CadastroExternoComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.tipoUsuario = params.get('tipo') || '';
+      this.tipoUsuario = (params.get('tipo') || '').toLowerCase();
       this.novoUsuario.tipoUsuario = this.tipoUsuario;
       
       if (this.tipoUsuario !== 'cuidador' && this.tipoUsuario !== 'medico' && this.tipoUsuario !== 'familiar') {
@@ -143,8 +143,8 @@ export class CadastroExternoComponent implements OnInit {
         alert('Por favor, selecione apenas arquivos PDF.');
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        alert('O arquivo é muito grande. O limite é 2MB.');
+      if (file.size > 700 * 1024) {
+        alert('O currículo é muito grande. Para garantir o salvamento, o limite é de 700KB. Tente um arquivo mais leve.');
         return;
       }
       this.fileName = file.name;
