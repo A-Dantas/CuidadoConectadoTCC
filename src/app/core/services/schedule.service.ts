@@ -109,9 +109,10 @@ export class ScheduleService {
   }
 
   async saveCalendarsData(data: { [cuidadorName: string]: any[] }): Promise<void> {
-    this.calendarsData = data;
-    this.schedulesSubject.next(data);
-    await setDoc(this.schedulesDocRef, data);
+    const cleanData = JSON.parse(JSON.stringify(data));
+    this.calendarsData = cleanData;
+    this.schedulesSubject.next(cleanData);
+    await setDoc(this.schedulesDocRef, cleanData);
   }
 
   resetSchedules(): void {

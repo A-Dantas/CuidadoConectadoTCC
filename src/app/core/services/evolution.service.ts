@@ -53,8 +53,9 @@ export class EvolutionService {
   async addEvolution(entry: EvolutionEntry): Promise<void> {
     const id = Date.now().toString() + '_' + Math.floor(Math.random()*1000);
     const newEntry = { ...entry, id };
+    const cleanEntry = JSON.parse(JSON.stringify(newEntry));
     const evolutionDoc = doc(this.firestore, `evolutions/${id}`);
-    await setDoc(evolutionDoc, newEntry);
+    await setDoc(evolutionDoc, cleanEntry);
   }
 
   resetEvolutions(): void {

@@ -76,9 +76,17 @@ export class UsuarioService {
              usuario.login = `${primeiroNome}${sufixo}`;
         }
         
-        const docId = usuario.login || id;
+        // Deep clean undefined fields that Firestore rejects (simulating stringify behavior from localStorage)
+        const cleanUsuario = JSON.parse(JSON.stringify(usuario));
+
+        const docId = cleanUsuario.login || id;
         const usuarioDoc = doc(this.firestore, `usuarios/${docId}`);
-        await setDoc(usuarioDoc, usuario);
+        try {
+            await setDoc(usuarioDoc, cleanUsuario);
+            console.log(`Usuário ${docId} salvo com sucesso no Firestore.`);
+        } catch (error) {
+            console.error(`Erro ao salvar usuário ${docId} no Firestore:`, error);
+        }
     }
 
     getUsuarios(): Observable<Usuario[]> {

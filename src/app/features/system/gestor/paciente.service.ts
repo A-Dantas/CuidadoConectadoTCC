@@ -64,8 +64,16 @@ export class PacienteService {
     }
 
     private async adicionarPacienteComID(id: string, paciente: Paciente) {
+        // Objeto limpando campos undefined
+        const cleanPaciente = JSON.parse(JSON.stringify(paciente));
+
         const pacienteDoc = doc(this.firestore, `pacientes/${id}`);
-        await setDoc(pacienteDoc, paciente);
+        try {
+            await setDoc(pacienteDoc, cleanPaciente);
+            console.log(`Paciente ${id} salvo com sucesso no Firestore.`);
+        } catch (error) {
+            console.error(`Erro ao salvar paciente ${id} no Firestore:`, error);
+        }
     }
 
     adicionarPaciente(paciente: Paciente): void {
