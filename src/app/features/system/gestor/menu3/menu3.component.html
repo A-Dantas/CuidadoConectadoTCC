@@ -25,7 +25,7 @@
         </div>
         }
 
-        @for (usuario of usuariosFiltrados; track usuario.userName) {
+        @for (usuario of usuariosFiltrados; track (usuario.login || usuario.email)) {
         <div class="user-card" 
             [class.cursor-pointer]="usuario.role === 'Caregiver'"
             [class.role-caregiver]="usuario.role === 'Caregiver'"

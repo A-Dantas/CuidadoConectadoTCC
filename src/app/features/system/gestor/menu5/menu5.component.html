@@ -20,7 +20,7 @@
             </div>
         }
 
-        @for (item of curriculosFiltrados; track item.email) {
+        @for (item of curriculosFiltrados; track (item.login || item.email)) {
             <div class="curriculo-card" (click)="abrirDetalhes(item)">
                 <div class="card-status-badge">PENDENTE</div>
                 <div class="user-avatar">

@@ -556,6 +556,15 @@ export class Menu1Component implements OnInit, OnDestroy {
     if (!this.novoMedico.whatsapp?.trim()) this.errosMedico.whatsapp = true;
     if (!this.novoMedico.email?.trim()) this.errosMedico.email = true;
 
+    // Validação específica da Chave PIX
+    if (this.novoMedico.chavePix) {
+      const tipo = this.novoMedico.tipoChavePix;
+      const valor = this.novoMedico.chavePix;
+      if (tipo === 'CPF' && valor.length < 14) this.errosMedico.chavePix = true;
+      if (tipo === 'Telefone' && valor.length < 14) this.errosMedico.chavePix = true;
+      if (tipo === 'Email' && !valor.includes('@')) this.errosMedico.chavePix = true;
+    }
+
     if (Object.keys(this.errosMedico).length > 0) return;
 
     if (this.novoMedico.userName.trim() && this.novoMedico.email.trim()) {
@@ -588,7 +597,9 @@ export class Menu1Component implements OnInit, OnDestroy {
       dataNascimento: '',
       idade: undefined,
       telefone: '',
-      whatsapp: ''
+      whatsapp: '',
+      chavePix: '',
+      tipoChavePix: 'CPF'
     } as Usuario;
   }
 
@@ -617,6 +628,15 @@ export class Menu1Component implements OnInit, OnDestroy {
     if (!this.novoFamiliar.bairro?.trim()) this.errosFamiliar.bairro = true;
     if (!this.novoFamiliar.cidade?.trim()) this.errosFamiliar.cidade = true;
     if (!this.novoFamiliar.estado?.trim()) this.errosFamiliar.estado = true;
+
+    // Validação específica da Chave PIX
+    if (this.novoFamiliar.chavePix) {
+      const tipo = this.novoFamiliar.tipoChavePix;
+      const valor = this.novoFamiliar.chavePix;
+      if (tipo === 'CPF' && valor.length < 14) this.errosFamiliar.chavePix = true;
+      if (tipo === 'Telefone' && valor.length < 14) this.errosFamiliar.chavePix = true;
+      if (tipo === 'Email' && !valor.includes('@')) this.errosFamiliar.chavePix = true;
+    }
 
     if (Object.keys(this.errosFamiliar).length > 0) return;
 
@@ -675,7 +695,9 @@ export class Menu1Component implements OnInit, OnDestroy {
       cidade: '',
       estado: '',
       endereco: '',
-      whatsapp: ''
+      whatsapp: '',
+      chavePix: '',
+      tipoChavePix: 'CPF'
     } as Usuario;
   }
 

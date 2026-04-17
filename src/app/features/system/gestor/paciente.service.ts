@@ -38,8 +38,17 @@ export class PacienteService {
         this.carregarPacientes();
     }
 
+    private normalizarTexto(texto: string): string {
+        return texto.normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .replace(/\s+/g, '') // remove espaços
+                    .replace(/[^a-z0-9]/g, ''); // remove tudo que não for alfanumérico
+    }
+
     private carregarPacientes(): void {
         collectionData(this.pacientesCollection, { idField: 'cpf_id' }).subscribe((pacientes: any[]) => {
+            console.log('🔄 Sincronização Firestore (Pacientes):', pacientes.length, 'itens');
             if (pacientes.length === 0 && this.firstLoad) {
                 // Se o banco estiver vazio, inserimos os dados de inicialização (Seed Data)
                 this.firstLoad = false;
@@ -77,8 +86,11 @@ export class PacienteService {
     }
 
     adicionarPaciente(paciente: Paciente): void {
-        const cpfKey = paciente.cpf ? paciente.cpf.replace(/\D/g, '') : `paciente_${Date.now()}`;
-        this.adicionarPacienteComID(cpfKey, paciente);
+        // Prio 1: CPF limpo | Prio 2: Nome normalizado + ID randômico
+        const cpfLimpo = paciente.cpf ? paciente.cpf.replace(/\D/g, '') : '';
+        const idSugerido = cpfLimpo || `${this.normalizarTexto(paciente.nomePaciente)}_${Date.now()}`;
+        
+        this.adicionarPacienteComID(idSugerido, paciente);
     }
 
     editarPaciente(index: number, paciente: Paciente): void {

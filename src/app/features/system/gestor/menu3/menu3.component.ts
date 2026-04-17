@@ -19,8 +19,8 @@ export class Menu3Component implements OnInit, OnDestroy {
 
   get usuariosFiltrados(): Usuario[] {
     const usuariosSemGestor = this.usuarios.filter(u => {
-      const role = u.role.toLowerCase();
-      return role !== 'manager' && role !== 'gestor';
+      const role = u.role ? u.role.toLowerCase() : '';
+      return role !== 'manager' && role !== 'gestor' && role !== '';
     });
 
     if (this.filtroRole === 'Todos') {
