@@ -61,14 +61,20 @@ export class UsuarioService {
         collectionData(this.usuariosCollection, { idField: 'firestore_id' }).subscribe({
             next: (usuarios: any[]) => {
                 console.log('🔄 Firestore Sync (Usuários):', usuarios.length, 'registros recebidos.');
+                
                 if (usuarios.length === 0 && this.firstLoad) {
-                this.firstLoad = false;
-                INITIAL_USUARIOS.forEach(u => {
-                    const loginRef = u.login || `user_${Date.now()}_${Math.random()}`;
+                    this.firstLoad = false;
+                    console.log('🌱 Inicializando banco com dados semente...');
+                    
+                    // Emitir imediatamente para a UI não ficar vazia
+                    this.usuariosSubject.next(INITIAL_USUARIOS as Usuario[]);
+
+                    INITIAL_USUARIOS.forEach(u => {
+                        const loginRef = u.login || `user_${Date.now()}_${Math.random()}`;
                         this.salvarUsuarioFirestore(loginRef, u);
                     });
                 } else {
-                    if (!this.firstLoad) {
+                    if (!this.firstLoad && usuarios.length > this.usuariosSubject.value.length) {
                         this.notificationService.setDot('Usuários', true);
                         this.notificationService.setDot('Currículos', true); 
                     }

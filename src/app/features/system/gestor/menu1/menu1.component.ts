@@ -519,12 +519,12 @@ export class Menu1Component implements OnInit, OnDestroy {
       this.novoCuidador.experienciaComorbidades = comorbidadesValidas.join(', ');
       this.novoCuidador.experienciaComorbidadesList = comorbidadesValidas; // Salvar array também
 
-      // Marcar como Cuidador e Currículo Pendente para sincronia global
+      // Cadastro realizado pelo Gestor é ATIVO por padrão e não vai para Currículos
       this.novoCuidador.role = 'Caregiver';
-      this.novoCuidador.isCurriculo = true;
-      this.novoCuidador.status = 'pending';
+      this.novoCuidador.isCurriculo = false;
+      this.novoCuidador.status = 'active';
 
-      console.log('📝 Cadastro Rápido de Cuidador:', this.novoCuidador);
+      console.log('📝 Cadastro Rápido de Cuidador (Ativo):', this.novoCuidador);
 
       // Adicionar usuário
       this.usuarioService.adicionarUsuario({ ...this.novoCuidador });
@@ -1066,8 +1066,8 @@ export class Menu1Component implements OnInit, OnDestroy {
       // Mapear tipoUsuario para role e configurar status
       if (this.novoUsuario.tipoUsuario === 'cuidador') {
         this.novoUsuario.role = 'Caregiver';
-        this.novoUsuario.isCurriculo = true;
-        this.novoUsuario.status = 'pending';
+        this.novoUsuario.isCurriculo = false; // Cadastro direto pelo Gestor
+        this.novoUsuario.status = 'active';
       } else if (this.novoUsuario.tipoUsuario === 'medico') {
         this.novoUsuario.role = 'Doctor';
         this.novoUsuario.status = 'active';

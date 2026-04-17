@@ -49,15 +49,20 @@ export class PacienteService {
     private carregarPacientes(): void {
         collectionData(this.pacientesCollection, { idField: 'cpf_id' }).subscribe((pacientes: any[]) => {
             console.log('🔄 Sincronização Firestore (Pacientes):', pacientes.length, 'itens');
+            
             if (pacientes.length === 0 && this.firstLoad) {
-                // Se o banco estiver vazio, inserimos os dados de inicialização (Seed Data)
                 this.firstLoad = false;
+                console.log('🌱 Inicializando pacientes (Seed Data)...');
+                
+                // Emitir imediatamente para a UI
+                this.pacientesSubject.next(INITIAL_PACIENTES as Paciente[]);
+
                 INITIAL_PACIENTES.forEach(p => {
                     const cpfKey = p.cpf ? p.cpf.replace(/\D/g, '') : `paciente_${Date.now()}_${Math.random()}`;
                     this.adicionarPacienteComID(cpfKey, p);
                 });
             } else {
-                if (!this.firstLoad) {
+                if (!this.firstLoad && pacientes.length > this.pacientesSubject.value.length) {
                     this.notificationService.setDot('Pacientes', true);
                     this.notificationService.setDot('Meus Pacientes', true);
                     this.notificationService.setDot('Meu Idoso', true);
