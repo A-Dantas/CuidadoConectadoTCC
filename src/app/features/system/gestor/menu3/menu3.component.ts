@@ -81,6 +81,10 @@ export class Menu3Component implements OnInit, OnDestroy {
     );
   }
 
+  isNovo(usuario: Usuario): boolean {
+    return this.usuarioService.isNovo(usuario);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

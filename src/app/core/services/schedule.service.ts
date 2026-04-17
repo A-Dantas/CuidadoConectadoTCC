@@ -34,11 +34,11 @@ export class ScheduleService {
           console.log('🧹 Removendo plantões do Kelvin do banco remoto...');
           delete data['Kelvin'];
           this.saveCalendarsData(data);
-          return; // Para evitar loops, o save vai triggar um novo reload
+          return; 
         }
 
-        // Se já tínhamos dados previamente carregados, é uma notificação em tempo real
-        if (Object.keys(this.calendarsData).length > 0) {
+        // Notificar apenas se não for o primeiro carregamento
+        if (!this.isSeeded && Object.keys(this.calendarsData).length > 0) {
            this.notificationService.setDot('Agendar', true);
            this.notificationService.setDot('Meus Plantões', true);
            this.notificationService.setDot('Agenda', true);
@@ -52,6 +52,12 @@ export class ScheduleService {
         }
       }
     });
+  }
+
+  limparDestaques(): void {
+    this.notificationService.clearDot('Agendar');
+    this.notificationService.clearDot('Meus Plantões');
+    this.notificationService.clearDot('Agenda');
   }
 
   private initializeWithSeedData(): void {

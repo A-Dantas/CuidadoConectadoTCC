@@ -45,6 +45,10 @@ export class UsuarioService {
     private firstLoad = true;
     private notificationService = inject(NotificationService);
 
+    // Rastreamento de novidades
+    private vistosIds = new Set<string>();
+    private novosIds = new Set<string>();
+
     constructor() { 
         this.carregarUsuarios();
     }
@@ -72,11 +76,28 @@ export class UsuarioService {
                         this.salvarUsuarioFirestore(loginRef, u);
                     });
                 } else {
-                    // Notificar se for uma atualização real (mais itens que os que já tínhamos)
-                    if (!this.firstLoad && usuarios.length > this.usuariosSubject.value.length) {
-                        this.notificationService.setDot('Usuários', true);
-                        this.notificationService.setDot('Currículos', true); 
+                    // Detecção Inteligente de Novidades
+                    const novosItensEncontrados: any[] = [];
+                    
+                    usuarios.forEach(u => {
+                        const id = u.firestore_id || u.login;
+                        if (!this.vistosIds.has(id)) {
+                            if (!this.firstLoad) {
+                                this.novosIds.add(id);
+                                novosItensEncontrados.push(u);
+                            }
+                            this.vistosIds.add(id);
+                        }
+                    });
+
+                    if (novosItensEncontrados.length > 0) {
+                        const temNovosPendentes = novosItensEncontrados.some(u => u.status === 'pending');
+                        const temNovosAtivos = novosItensEncontrados.some(u => u.status === 'active');
+
+                        if (temNovosAtivos) this.notificationService.setDot('Usuários', true);
+                        if (temNovosPendentes) this.notificationService.setDot('Currículos', true); 
                     }
+
                     this.firstLoad = false;
                     // Atualiza o subject com os dados reais do Firestore (sobrescreve os dados otimistas se necessário)
                     this.usuariosSubject.next(usuarios as Usuario[]);
@@ -120,6 +141,30 @@ export class UsuarioService {
 
     getUsuariosAtuais(): Usuario[] {
         return this.usuariosSubject.value;
+    }
+
+    isNovo(usuario: Usuario): boolean {
+        const id = usuario.firestore_id || usuario.login;
+        return id ? this.novosIds.has(id) : false;
+    }
+
+    limparDestaques(status?: 'pending' | 'active'): void {
+        // Limpar os pontos de notificação IMEDIATAMENTE
+        if (status === 'active') this.notificationService.clearDot('Usuários');
+        if (status === 'pending') this.notificationService.clearDot('Currículos');
+        if (!status) {
+            this.notificationService.clearDot('Usuários');
+            this.notificationService.clearDot('Currículos');
+        }
+
+        // Aguardar 5 segundos antes de limpar os IDs de destaque para dar tempo da animação rodar
+        setTimeout(() => {
+            const usuariosParaLimpar = this.usuariosSubject.value.filter(u => !status || u.status === status);
+            usuariosParaLimpar.forEach(u => {
+                const id = u.firestore_id || u.login;
+                if (id) this.novosIds.delete(id);
+            });
+        }, 5000);
     }
 
     adicionarUsuario(usuario: Usuario): void {

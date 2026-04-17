@@ -117,6 +117,10 @@ export class Menu2Component implements OnInit, OnDestroy {
     );
   }
 
+  isNovo(paciente: Paciente): boolean {
+    return this.pacienteService.isNovo(paciente);
+  }
+
   loadCalendarsData(): void {
     // Deprecado. Sincronização via ScheduleService Firestore.
   }

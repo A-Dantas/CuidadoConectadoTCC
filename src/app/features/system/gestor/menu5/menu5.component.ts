@@ -35,6 +35,10 @@ export class Menu5Component implements OnInit, OnDestroy {
     );
   }
 
+  isNovo(curriculo: Usuario): boolean {
+    return this.usuarioService.isNovo(curriculo);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

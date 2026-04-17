@@ -21,7 +21,7 @@
         }
 
         @for (paciente of pacientes; track paciente.nomePaciente; let i = $index) {
-        <div class="card card_paciente">
+        <div class="card card_paciente" [class.destaque-novo]="isNovo(paciente)">
             <div class="card-header-actions">
                 <div class="card-actions">
                     <button class="action-icon edit-icon" (click)="abrirModalEdicao(paciente, i)" title="Editar">

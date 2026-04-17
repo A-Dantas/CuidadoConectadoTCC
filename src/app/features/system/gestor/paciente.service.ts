@@ -34,6 +34,10 @@ export class PacienteService {
     private firstLoad = true;
     private notificationService = inject(NotificationService);
 
+    // Rastreamento de novidades
+    private vistosIds = new Set<string>();
+    private novosIds = new Set<string>();
+
     constructor() {
         this.carregarPacientes();
     }
@@ -60,11 +64,25 @@ export class PacienteService {
                     this.adicionarPacienteComID(cpfKey, p);
                 });
             } else {
-                if (!this.firstLoad && pacientes.length > this.pacientesSubject.value.length) {
+                // Detecção de novos pacientes
+                const novosItensEncontrados: any[] = [];
+                pacientes.forEach(p => {
+                    const id = p.cpf_id || p.cpf;
+                    if (!this.vistosIds.has(id)) {
+                        if (!this.firstLoad) {
+                            this.novosIds.add(id);
+                            novosItensEncontrados.push(p);
+                        }
+                        this.vistosIds.add(id);
+                    }
+                });
+
+                if (novosItensEncontrados.length > 0) {
                     this.notificationService.setDot('Pacientes', true);
                     this.notificationService.setDot('Meus Pacientes', true);
                     this.notificationService.setDot('Meu Idoso', true);
                 }
+
                 this.firstLoad = false;
                 this.pacientesSubject.next(pacientes as Paciente[]);
             }
@@ -73,6 +91,26 @@ export class PacienteService {
 
     getPacientes(): Observable<Paciente[]> {
         return this.pacientes$;
+    }
+
+    isNovo(paciente: Paciente): boolean {
+        const id = paciente.cpf_id || paciente.cpf;
+        return id ? this.novosIds.has(id) : false;
+    }
+
+    limparDestaques(): void {
+        // Limpar os pontos de notificação IMEDIATAMENTE
+        this.notificationService.clearDot('Pacientes');
+        this.notificationService.clearDot('Meus Pacientes');
+        this.notificationService.clearDot('Meu Idoso');
+
+        // Aguardar 5 segundos antes de limpar os IDs de destaque
+        setTimeout(() => {
+            this.pacientesSubject.value.forEach(p => {
+                const id = p.cpf_id || p.cpf;
+                if (id) this.novosIds.delete(id);
+            });
+        }, 5000);
     }
 
     private async adicionarPacienteComID(id: string, paciente: Paciente) {
