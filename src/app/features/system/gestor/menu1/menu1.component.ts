@@ -475,7 +475,16 @@ export class Menu1Component implements OnInit, OnDestroy {
     if (!this.novoCuidador.telefone?.trim()) this.errosCuidador.telefone = true;
     if (!this.novoCuidador.email?.trim()) this.errosCuidador.email = true;
     if (!this.novoCuidador.whatsapp?.trim()) this.errosCuidador.whatsapp = true;
-    if (!this.novoCuidador.tempoExperiencia?.trim()) this.errosCuidador.tempoExperiencia = true;
+    if (!this.novoCuidador.tempoExperiencia) this.errosCuidador.tempoExperiencia = true;
+    
+    // Validação específica da Chave PIX
+    if (this.novoCuidador.chavePix) {
+      const tipo = this.novoCuidador.tipoChavePix;
+      const valor = this.novoCuidador.chavePix;
+      if (tipo === 'CPF' && valor.length < 14) this.errosCuidador.chavePix = true;
+      if (tipo === 'Telefone' && valor.length < 14) this.errosCuidador.chavePix = true;
+      if (tipo === 'Email' && !valor.includes('@')) this.errosCuidador.chavePix = true;
+    }
 
     if (Object.keys(this.errosCuidador).length > 0) return;
 
@@ -840,8 +849,22 @@ export class Menu1Component implements OnInit, OnDestroy {
     if (valor.length >= 7) valorFormatado += '.' + valor.substring(6, 9);
     if (valor.length >= 10) valorFormatado += '-' + valor.substring(9, 11);
     
-    objeto.cpf = valorFormatado;
+    if ('cpf' in objeto) {
+      objeto.cpf = valorFormatado;
+    }
     event.target.value = valorFormatado;
+  }
+
+  formatarChavePix(event: any, objeto: any): void {
+    const tipo = objeto.tipoChavePix;
+    if (tipo === 'CPF') {
+      this.formatarCPF(event, objeto);
+      objeto.chavePix = event.target.value;
+    } else if (tipo === 'Telefone') {
+      this.formatarTelefone(event, 'chavePix', objeto);
+    } else {
+      objeto.chavePix = event.target.value;
+    }
   }
 
   formatFirstAndLastName(fullName: string): string {
@@ -953,8 +976,17 @@ export class Menu1Component implements OnInit, OnDestroy {
       if (!this.novoUsuario.bairro?.trim()) this.errosUsuario.bairro = true;
       if (!this.novoUsuario.cidade?.trim()) this.errosUsuario.cidade = true;
       if (!this.novoUsuario.estado?.trim()) this.errosUsuario.estado = true;
-      if (!this.novoUsuario.chavePix?.trim()) this.errosUsuario.chavePix = true;
       if (!this.novoUsuario.tempoExperiencia?.trim()) this.errosUsuario.tempoExperiencia = true;
+      if (!this.novoUsuario.chavePix?.trim()) this.errosUsuario.chavePix = true;
+
+      // Validação formato PIX
+      if (this.novoUsuario.chavePix) {
+        const tipo = this.novoUsuario.tipoChavePix;
+        const valor = this.novoUsuario.chavePix;
+        if (tipo === 'CPF' && valor.length < 14) this.errosUsuario.chavePix = true;
+        if (tipo === 'Telefone' && valor.length < 14) this.errosUsuario.chavePix = true;
+        if (tipo === 'Email' && !valor.includes('@')) this.errosUsuario.chavePix = true;
+      }
     } else if (this.novoUsuario.tipoUsuario === 'medico') {
       if (!this.novoUsuario.whatsapp?.trim()) this.errosUsuario.whatsapp = true;
     } else if (this.novoUsuario.tipoUsuario === 'familiar') {

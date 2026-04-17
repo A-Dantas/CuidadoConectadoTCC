@@ -259,8 +259,24 @@ export class CadastroExternoComponent implements OnInit {
     if (valor.length >= 7) valorFormatado += '.' + valor.substring(6, 9);
     if (valor.length >= 10) valorFormatado += '-' + valor.substring(9, 11);
     
-    objeto.cpf = valorFormatado;
+    // Se o objeto tiver a propriedade cpf, salva nela (para Pacientes)
+    // Se for usado via formatarChavePix, ele lidará com o salvamento em chavePix
+    if ('cpf' in objeto) {
+      objeto.cpf = valorFormatado;
+    }
     event.target.value = valorFormatado;
+  }
+
+  formatarChavePix(event: any, objeto: any): void {
+    const tipo = objeto.tipoChavePix;
+    if (tipo === 'CPF') {
+      this.formatarCPF(event, objeto);
+      objeto.chavePix = event.target.value;
+    } else if (tipo === 'Telefone') {
+      this.formatarTelefone(event, 'chavePix', objeto);
+    } else {
+      objeto.chavePix = event.target.value;
+    }
   }
 
   verificarCpfExistente(): void {
@@ -338,6 +354,17 @@ export class CadastroExternoComponent implements OnInit {
       if (!this.novoPaciente.bairro.trim()) this.errosPaciente.bairro = true;
       if (!this.novoPaciente.cidade.trim()) this.errosPaciente.cidade = true;
       if (!this.novoPaciente.estado.trim()) this.errosPaciente.estado = true;
+    }
+
+    // Validação específica da Chave PIX baseada no tipo
+    if (this.tipoUsuario === 'cuidador' && this.novoUsuario.chavePix) {
+      const tipo = this.novoUsuario.tipoChavePix;
+      const valor = this.novoUsuario.chavePix;
+      
+      if (tipo === 'CPF' && valor.length < 14) this.errosUsuario.chavePix = true;
+      if (tipo === 'Telefone' && valor.length < 14) this.errosUsuario.chavePix = true;
+      if (tipo === 'Email' && !valor.includes('@')) this.errosUsuario.chavePix = true;
+      // Chave Aleatória não tem um padrão fixo de tamanho, mas deve existir
     }
 
     if (Object.keys(this.errosUsuario).length > 0 || Object.keys(this.errosPaciente).length > 0) return;

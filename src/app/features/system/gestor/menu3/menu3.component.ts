@@ -147,6 +147,24 @@ export class Menu3Component implements OnInit, OnDestroy {
 
   salvarEdicao(): void {
     if (this.indiceEditando !== -1) {
+      // Validação específica PIX para Cuidador
+      if (this.usuarioEditando.role === 'Caregiver' && this.usuarioEditando.chavePix) {
+        const tipo = this.usuarioEditando.tipoChavePix;
+        const valor = this.usuarioEditando.chavePix;
+        if (tipo === 'CPF' && valor.length < 14) {
+          alert('O formato da chave PIX CPF está incompleto.');
+          return;
+        }
+        if (tipo === 'Telefone' && valor.length < 14) {
+          alert('O formato da chave PIX Telefone está incompleto.');
+          return;
+        }
+        if (tipo === 'Email' && !valor.includes('@')) {
+          alert('O formato da chave PIX E-mail é inválido.');
+          return;
+        }
+      }
+
       this.usuarioService.atualizarUsuario(this.indiceEditando, this.usuarioEditando);
       this.fecharModalEdicao();
       this.modalSucessoEdicaoAberto = true;
@@ -286,8 +304,23 @@ export class Menu3Component implements OnInit, OnDestroy {
     if (valor.length >= 4) valorFormatado += '.' + valor.substring(3, 6);
     if (valor.length >= 7) valorFormatado += '.' + valor.substring(6, 9);
     if (valor.length >= 10) valorFormatado += '-' + valor.substring(9, 11);
-    objeto.cpfPacienteResponsavel = valorFormatado;
+    
+    if (objeto.role === 'Family Member') {
+      objeto.cpfPacienteResponsavel = valorFormatado;
+    }
     event.target.value = valorFormatado;
+  }
+
+  formatarChavePix(event: any, objeto: any): void {
+    const tipo = objeto.tipoChavePix;
+    if (tipo === 'CPF') {
+      this.formatarCPF(event, objeto);
+      objeto.chavePix = event.target.value;
+    } else if (tipo === 'Telefone') {
+      this.formatarTelefone(event, 'chavePix', objeto);
+    } else {
+      objeto.chavePix = event.target.value;
+    }
   }
 
   // Método para traduzir role

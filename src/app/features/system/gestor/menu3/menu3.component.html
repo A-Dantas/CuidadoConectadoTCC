@@ -218,7 +218,7 @@
             <div class="form-row" *ngIf="usuarioEditando.role === 'Caregiver'">
                 <div class="form-group form-group-small" style="flex: 0 0 150px;">
                     <label>Tipo de PIX</label>
-                    <select class="form-input" [(ngModel)]="usuarioEditando.tipoChavePix">
+                    <select class="form-input" [(ngModel)]="usuarioEditando.tipoChavePix" (change)="usuarioEditando.chavePix = ''">
                         <option value="CPF">CPF</option>
                         <option value="Email">E-mail</option>
                         <option value="Telefone">Telefone</option>
@@ -231,7 +231,8 @@
                         [placeholder]="usuarioEditando.tipoChavePix === 'CPF' ? '000.000.000-00' : 
                                       usuarioEditando.tipoChavePix === 'Email' ? 'email@exemplo.com' :
                                       usuarioEditando.tipoChavePix === 'Telefone' ? '(00) 00000-0000' : 'Chave Aleatória'" 
-                        [(ngModel)]="usuarioEditando.chavePix">
+                        [(ngModel)]="usuarioEditando.chavePix"
+                        (input)="formatarChavePix($event, usuarioEditando)">
                 </div>
             </div>
 

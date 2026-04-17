@@ -319,7 +319,7 @@
                 <div class="form-row">
                     <div class="form-group form-group-small" style="flex: 0 0 150px;">
                         <label>Tipo de PIX</label>
-                        <select class="form-input" [(ngModel)]="novoCuidador.tipoChavePix">
+                        <select class="form-input" [(ngModel)]="novoCuidador.tipoChavePix" (change)="novoCuidador.chavePix = ''">
                             <option value="CPF">CPF</option>
                             <option value="Email">E-mail</option>
                             <option value="Telefone">Telefone</option>
@@ -332,8 +332,9 @@
                             [placeholder]="novoCuidador.tipoChavePix === 'CPF' ? '000.000.000-00' : 
                                           novoCuidador.tipoChavePix === 'Email' ? 'email@exemplo.com' :
                                           novoCuidador.tipoChavePix === 'Telefone' ? '(00) 00000-0000' : 'Chave Aleatória'" 
-                            [(ngModel)]="novoCuidador.chavePix">
-                        @if (errosCuidador.chavePix) { <span class="error-msg">Este campo é obrigatório</span> }
+                            [(ngModel)]="novoCuidador.chavePix"
+                            (input)="formatarChavePix($event, novoCuidador)">
+                        @if (errosCuidador.chavePix) { <span class="error-msg">Este campo é obrigatório ou formato inválido</span> }
                     </div>
                 </div>
 
@@ -770,7 +771,7 @@
             <div class="form-row" *ngIf="novoUsuario.tipoUsuario === 'cuidador'">
                 <div class="form-group form-group-small" style="flex: 0 0 150px;">
                     <label>Tipo de PIX</label>
-                    <select class="form-input" [(ngModel)]="novoUsuario.tipoChavePix">
+                    <select class="form-input" [(ngModel)]="novoUsuario.tipoChavePix" (change)="novoUsuario.chavePix = ''">
                         <option value="CPF">CPF</option>
                         <option value="Email">E-mail</option>
                         <option value="Telefone">Telefone</option>
@@ -783,8 +784,9 @@
                         [placeholder]="novoUsuario.tipoChavePix === 'CPF' ? '000.000.000-00' : 
                                       novoUsuario.tipoChavePix === 'Email' ? 'email@exemplo.com' :
                                       novoUsuario.tipoChavePix === 'Telefone' ? '(00) 00000-0000' : 'Chave Aleatória'" 
-                        [(ngModel)]="novoUsuario.chavePix">
-                    @if (errosUsuario.chavePix) { <span class="error-msg">Este campo é obrigatório</span> }
+                        [(ngModel)]="novoUsuario.chavePix"
+                        (input)="formatarChavePix($event, novoUsuario)">
+                    @if (errosUsuario.chavePix) { <span class="error-msg">Este campo é obrigatório ou formato inválido</span> }
                 </div>
             </div>
 
